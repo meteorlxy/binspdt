@@ -14,7 +14,7 @@ yarn install
 ### Config Django
 
 ```sh
-cp binspdt/settings.sample.py binspdt/settings.py 
+cp server/binspdt/settings.sample.py server/binspdt/settings.py 
 ```
 
 Config `DATABASE` and `IDA` settings.
