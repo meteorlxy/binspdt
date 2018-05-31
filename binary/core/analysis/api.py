@@ -1,0 +1,101 @@
+import pickle
+import numpy as np
+from ..asm import Module
+from ..algorithms import KM
+
+def load_calls(module):
+  if not hasattr(module, 'has_loaded_calls'):
+    for func in module.functions.values():
+      func.api_calls = set()
+      func.function_calls = list()
+    for edge in module.callgraph:
+      src_func = module.functions[edge['source']]
+      dest_func = module.functions[edge['destination']]
+      if dest_func.module_name != dest_func._module.name:
+        src_func.api_calls.add(dest_func.name)
+      else:
+        src_func.function_calls.append(dest_func)
+    module.has_loaded_calls = True
+
+def get_k_depth(f, f_b, k):
+  if k == 0:
+    return
+  for func_call in f.function_calls:
+    f_b |= func_call.api_calls
+    get_k_depth(f, f_b, k-1)
+
+def generate_api_birthmark(module, k):
+  if not hasattr(module, 'api_birthmark'):
+    module.api_birthmark = dict()
+  if k not in module.api_birthmark:
+    module.api_birthmark[k] = dict()
+    for func in module.functions.values():
+      func_api_birthmark = func.api_calls.copy()
+      get_k_depth(func, func_api_birthmark, k-1)
+      if len(func_api_birthmark) > 0:
+        module.api_birthmark[k][func.address] = func_api_birthmark
+
+def jaccard_sim(set_1, set_2):
+  union = set_1 | set_2
+  intersection = set_1 & set_2
+  if len(union) == 0 or len(intersection) == 0:
+    return 0
+  return len(intersection) / len(union)
+
+def get_similarity_matrix(module_1, module_2, k):
+  if hasattr(module_1, 'api_birthmark') and hasattr(module_2, 'api_birthmark'):
+    if (k in module_1.api_birthmark) and (k in module_2.api_birthmark):
+      sim_matrix = list()
+      for mod1 in module_1.api_birthmark[k].values():
+        mod1_sim = list()
+        for mod2 in module_2.api_birthmark[k].values():
+          mod1_sim.append(jaccard_sim(mod1, mod2))
+        sim_matrix.append(mod1_sim)
+      return sim_matrix
+  return False
+
+def analyse_api(db, module_1_id, module_2_id, k=2):
+  result_key = 'api_km_result_module_%s_module_%s_k_%s' % (min(module_1_id, module_2_id), max(module_1_id, module_2_id), k)
+  result = db.load_result(result_key)
+  if result == None:
+    print('Generating API birthmark...')
+    module_1 = Module(db=db, module_id=module_1_id).load().load_callgraph()
+    module_2 = Module(db=db, module_id=module_2_id).load().load_callgraph()
+
+    load_calls(module_1)
+    load_calls(module_2)
+
+    generate_api_birthmark(module_1, k)
+    generate_api_birthmark(module_2, k)
+
+    module_1.save(force=True)
+    module_2.save(force=True)
+
+    print('Caculating API birthmark similarity matrix...')
+    sim_matrix = get_similarity_matrix(module_1, module_2, k)
+
+    print('Running KM algorithm...')
+    km = KM(np.array(sim_matrix) * 1000)
+    match = km.run()
+
+    print('Generating result...')
+    sim_temp = 0
+    for x in range(len(match['x'])):
+      sim_temp += sim_matrix[x][match['x'][x]]
+    overall_similarity = 2 * sim_temp / (len(sim_matrix) + len(sim_matrix[0]))
+
+    result = {
+      'module_1': {
+        'name': module_1.name,
+        'function_num': len(module_1.functions),
+      },
+      'module_2': {
+        'name': module_2.name,
+        'function_num': len(module_2.functions),
+      },
+      'sim_matrix': sim_matrix,
+      'match': match,
+      'overall_similarity': overall_similarity
+    }
+    db.save_result(result_key, result)
+  return result

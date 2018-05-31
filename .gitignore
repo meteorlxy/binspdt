@@ -1,0 +1,24 @@
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Python
+*.pyc
+*.pyo
+
+# node_modules
+node_modules/
+
+# Django Settings
+binspdt/settings.py
+
+# Client Dist
+/client/dist/
+
+# Other
+.DS_Store
+*.log

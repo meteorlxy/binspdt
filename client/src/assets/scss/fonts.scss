@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Libre Franklin';
+  font-style: italic;
+  font-weight: 600;
+  src: url('../fonts/libre-franklin-v2-latin-600italic.eot'); /* IE9 Compat Modes */
+  src: local('Libre Franklin SemiBold Italic'), local('LibreFranklin-SemiBoldItalic'),
+       url('../fonts/libre-franklin-v2-latin-600italic.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/libre-franklin-v2-latin-600italic.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/libre-franklin-v2-latin-600italic.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/libre-franklin-v2-latin-600italic.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/libre-franklin-v2-latin-600italic.svg#LibreFranklin') format('svg'); /* Legacy iOS */
+}
