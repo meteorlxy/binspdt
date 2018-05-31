@@ -14,10 +14,10 @@
 node_modules/
 
 # Django Settings
-binspdt/settings.py
+server/binspdt/settings.py
 
 # Client Dist
-/client/dist/
+client/dist/
 
 # Other
 .DS_Store

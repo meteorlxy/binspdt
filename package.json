@@ -3,13 +3,13 @@
   "author": "meteorlxy <meteor.lxy@foxmail.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config client/build/webpack.dev.conf.js",
-    "watch": "webpack --progress --watch --hide-modules --config client/build/webpack.watch.conf.js",
+    "dev": "webpack --progress --watch --hide-modules --config client/build/webpack.dev.conf.js",
+    "dev-server": "webpack-dev-server --inline --progress --config client/build/webpack.dev-server.conf.js",
     "lint": "eslint --ext .js,.vue client/src",
     "build": "node client/build/build.js",
-    "migrate": "pipenv run python manage.py migrate binary --database=binary_db && pipenv run python manage.py migrate",
-    "start": "pipenv run python manage.py runserver",
-    "celery": "pipenv run celery -A binspdt worker -l info -P eventlet"
+    "migrate": "pipenv run python server/manage.py migrate binary --database=binary_db && pipenv run python manage.py migrate",
+    "start": "pipenv run python server/manage.py runserver",
+    "celery": "pipenv run celery -A server/binspdt worker -l info -P eventlet"
   },
   "dependencies": {
     "axios": "^0.18.0",

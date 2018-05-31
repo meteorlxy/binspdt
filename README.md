@@ -33,7 +33,7 @@ Build the web client / develop the web client
 
 ```sh
 yarn build # Build
-yarn watch # Develop in watch mode
+yarn dev # Develop in watch mode
 ```
 
 ### Start Django dev server
