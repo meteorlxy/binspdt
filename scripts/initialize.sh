@@ -11,6 +11,8 @@ if [ -f $settings_sample_file ] && [ ! -f $settings_file ]; then
 fi
 
 echo 'Installing and migrating...'
+# docker exec postgres createdb -Upostgres binspdt_web
+# docker exec postgres createdb -Upostgres binspdt_binary
 pipenv install && \
 pipenv run migrate && \
 pipenv run migrate-binary

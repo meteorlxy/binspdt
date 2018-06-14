@@ -12,7 +12,8 @@ const zh = {
     loading: '加载中...',
     importing: '导入中...',
     analysing: '分析中...',
-    executing: '处理中...'
+    executing: '处理中...',
+    error: '错误'
   },
   messages: {
     title: {
@@ -83,7 +84,9 @@ const zh = {
         match_algorithm_hint: '设定相似函数的整体匹配算法 [默认值 KM]',
         result: {
           overall_similarity: '整体相似度',
-          function_num: '函数/方法数量'
+          functions_with_api_count: '在调用深度k以内存在API调用的函数数量',
+          similar_functions: '相似函数',
+          function_api: '模块[{module}]中函数的API调用'
         }
       },
       messages: {
@@ -113,7 +116,16 @@ const zh = {
         get_success: '获取分析结果列表成功',
         get_error: '获取分析结果列表失败',
         details_success: '获取分析结果{name}详情成功',
-        details_error: '获取分析结果{name}详情失败'
+        details_error: '获取分析结果{name}详情失败',
+        close_confirm: '确认关闭吗？（记得保存结果）'
+      },
+      result: {
+        title: '分析结果',
+        save: '保存',
+        close: '关闭',
+        similarity: '相似度',
+        module_details: '模块 {name} 详情',
+        module_function_address: '模块 {name} 函数地址'
       }
     }
   }

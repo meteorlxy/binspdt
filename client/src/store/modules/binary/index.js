@@ -3,6 +3,7 @@ import resultsModule from './results'
 
 const binaryModule = {
   namespaced: true,
+
   modules: {
     modules: modulesModule,
     results: resultsModule

@@ -154,13 +154,11 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import ModuleImport from '@/components/ModuleImport'
-import PageTitle from '@/components/PageTitle'
 
 export default {
   name: 'Modules',
   components: {
-    ModuleImport,
-    PageTitle
+    ModuleImport
   },
   data () {
     return {

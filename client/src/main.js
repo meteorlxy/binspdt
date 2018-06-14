@@ -8,11 +8,15 @@ import axios from '@/utils/axios'
 import helpers from '@/utils/helpers'
 import '@/utils/element-ui'
 import '@/assets/scss/fonts.scss'
+import PageTitle from '@/components/global/PageTitle'
+
+Vue.component('PageTitle', PageTitle)
 
 Vue.config.productionTip = false
 Vue.prototype.$api = api
 Vue.prototype.$axios = axios
 Vue.prototype.$helpers = helpers
+Vue.prototype.$noop = _ => {}
 
 /* eslint-disable no-new */
 new Vue({

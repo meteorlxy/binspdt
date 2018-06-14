@@ -12,7 +12,8 @@ const en = {
     loading: 'Loading...',
     importing: 'Importing...',
     analysing: 'Analysing...',
-    executing: 'Executing...'
+    executing: 'Executing...',
+    error: 'Error'
   },
   messages: {
     title: {
@@ -83,7 +84,9 @@ const en = {
         match_algorithm_hint: 'Set the algorithm for matching similar functions [default KM]',
         result: {
           overall_similarity: 'Overall Similarity',
-          function_num: 'Number of Functions'
+          functions_with_api_count: 'Number of Functions with API calls in k call depth',
+          similar_functions: 'Similar Functions',
+          function_api: 'API calls of Function in Module [{module}]'
         }
       },
       messages: {
@@ -113,7 +116,16 @@ const en = {
         get_success: 'Loaded list of analysis results',
         get_error: 'Loading list of analysis results',
         details_success: 'Loaded details of result {name}',
-        details_error: 'Loading details of result {name}'
+        details_error: 'Loading details of result {name}',
+        close_confirm: 'Confirm to close? (Remember to save it)'
+      },
+      result: {
+        title: 'Analysis Result',
+        save: 'Save',
+        close: 'Close',
+        similarity: 'Similarity',
+        module_details: 'Module {name} Details',
+        module_function_address: 'Function Address of Module {name}'
       }
     }
   }

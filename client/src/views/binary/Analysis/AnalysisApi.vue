@@ -44,13 +44,11 @@
 
 <script>
 import ModuleSelect from '@/components/ModuleSelect'
-import PageTitle from '@/components/PageTitle'
 
 export default {
   name: 'AnalysisApi',
   components: {
-    ModuleSelect,
-    PageTitle
+    ModuleSelect
   },
   data () {
     return {

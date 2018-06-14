@@ -91,8 +91,8 @@ def analyse_api(db, module_1_id, module_2_id, k=2, algorithm='km', precision=100
   overall_similarity = 2 * sim_temp / (len(sim_matrix) + len(sim_matrix[0]))
 
   result = {
-    'module_1': module_1.id,
-    'module_2': module_2.id,
+    'module_1_id': module_1.id,
+    'module_2_id': module_2.id,
     'params': {
       'k': k,
       'algorithm': algorithm,

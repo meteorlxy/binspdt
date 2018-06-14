@@ -142,23 +142,42 @@
         @current-change="handlePageChange"
         @size-change="handlePerPageChange"/>
     </div>
+
+    <ElDialog
+      class="analysis-result"
+      width="90%"
+      :title="$t('binary.results.result.title')"
+      :visible="showResult"
+      :before-close="handleResultClose">
+      <component
+        :is="currentResultComponent"
+        :data="currentResultDetails"/>
+
+      <span slot="footer">
+        <ElButton @click="handleResultClose">{{ $t('binary.results.result.close') }}</ElButton>
+
+        <!-- <ElButton type="primary" @click="handleResultSave">{{ $t('binary.results.result.save') }}</ElButton> -->
+      </span>
+    </ElDialog>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import PageTitle from '@/components/PageTitle'
+import APIResult from '@/components/results/APIResult'
 
 export default {
   name: 'Results',
 
   components: {
-    PageTitle
+    APIResult
   },
 
   data () {
     return {
-      loading: false
+      showResult: false,
+      currentResult: {},
+      currentResultDetails: {}
     }
   },
 
@@ -166,6 +185,7 @@ export default {
     ...mapState('binary/modules', [
       'modules'
     ]),
+
     ...mapState('binary/results', [
       'results',
       'count',
@@ -174,7 +194,18 @@ export default {
       'perPage',
       'isLoading',
       'isLoadingDetails'
-    ])
+    ]),
+
+    currentResultComponent () {
+      switch (this.currentResult.type) {
+        case 'api':
+          return 'APIResult'
+        default:
+          return {
+            render: h => h('span', null, this.$t('status.error'))
+          }
+      }
+    }
   },
 
   created () {
@@ -195,12 +226,23 @@ export default {
     },
 
     async handleDetails (row) {
-      const details = await this.details(row.id)
-      return details
+      this.currentResult = row
+      this.currentResultDetails = await this.details(row.id)
+      this.showResult = true
     },
 
     async handleDelete (row) {
 
+    },
+
+    handleResultClose () {
+      this.$confirm(this.$t('binary.results.messages.close_confirm'))
+        .then(() => {
+          this.showResult = false
+          this.currentResult = {}
+          this.currentResultDetails = {}
+        })
+        .catch(this.$noop)
     },
 
     handlePageChange (page) {

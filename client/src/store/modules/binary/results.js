@@ -5,6 +5,7 @@ import { Notification } from 'element-ui'
 
 const resultsModule = {
   namespaced: true,
+
   state: {
     results: [],
     count: 0,
@@ -15,6 +16,7 @@ const resultsModule = {
     isLoading: false,
     isLoadingDetails: false
   },
+
   mutations: {
     setResults (state, data) {
       state.results = data.data
@@ -23,13 +25,16 @@ const resultsModule = {
       state.page = data.page
       state.perPage = data.per_page
     },
+
     setLoading (state, data) {
       state.isLoading = data
     },
+
     setLoadingDetails (state, data) {
       state.isLoadingDetails = data
     }
   },
+
   actions: {
     async get ({ state, commit }, { page = 1, perPage = 20 }) {
       if (state.isLoading) {

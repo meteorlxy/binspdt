@@ -5,6 +5,7 @@ import { Message, Notification } from 'element-ui'
 
 const modulesModule = {
   namespaced: true,
+
   state: {
     modules: [],
     modules_details: new Map(),
@@ -13,29 +14,37 @@ const modulesModule = {
     modules_isLoading_details: [],
     modules_isDeleting: []
   },
+
   mutations: {
     setLoading (state, data) {
       state.isLoading = data
     },
+
     setModules (state, data) {
       state.modules = data
     },
+
     setModuleDetails (state, { id, details }) {
       state.modules_details.set(id, details)
     },
+
     addLoadingDetails (state, id) {
       state.modules_isLoading_details.push(id)
     },
+
     removeLoadingDetails (state, id) {
       state.modules_isLoading_details.splice(state.modules_isLoading_details.indexOf(id), 1)
     },
+
     addDeleting (state, id) {
       state.modules_isDeleting.push(id)
     },
+
     removeDeleting (state, id) {
       state.modules_isDeleting.splice(state.modules_isDeleting.indexOf(id), 1)
     }
   },
+
   actions: {
     async get ({ state, commit }, showMessage = true) {
       if (state.isLoading) {
