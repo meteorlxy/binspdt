@@ -3,17 +3,16 @@ const api = {
     modules: {
       index: () => '/api/binary/modules',
       import: version => `/api/binary/modules/v/${version}`,
-      detail: id => `/api/binary/modules/${id}`,
+      details: id => `/api/binary/modules/${id}`,
       delete: id => `/api/binary/modules/${id}`,
-      load: id => `/api/binary/modules/${id}/load`,
-      analysis: {
-        api: () => '/api/binary/analysis/api'
-      }
+      load: id => `/api/binary/modules/${id}/load`
     },
     analysis: {
-      api: {
-        index: () => '/api/binary/analysis/api'
-      }
+      api: () => '/api/binary/analysis/api'
+    },
+    results: {
+      index: () => '/api/binary/results',
+      details: id => `/api/binary/results/${id}`
     }
   }
 }

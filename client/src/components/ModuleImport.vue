@@ -6,13 +6,15 @@
     :on-progress="onProgress"
     :on-success="onSuccess"
     :on-error="onError"
-    :disabled="disabled">
+    :disabled="isDisabled">
     <ElButton
       size="small"
-      type="primary"
+      type="warning"
       icon="el-icon-upload"
-      :loading="disabled">
-      {{ buttonText }}
+      :round="true"
+      :loading="isDisabled"
+      :title="$t('binary.modules.import_button')">
+      {{ $t('binary.modules.import_button') }}
     </ElButton>
   </ElUpload>
 </template>
@@ -22,10 +24,11 @@ import { mapState, mapActions } from 'vuex'
 export default {
   name: 'ModuleImport',
   model: {
-    prop: 'importing'
+    prop: 'isImporting',
+    event: 'importing'
   },
   props: {
-    importing: {
+    isImporting: {
       type: Boolean,
       required: false,
       default: false
@@ -37,43 +40,33 @@ export default {
     }
   },
   computed: {
-    ...mapState('binary/module', [
-      'loading'
+    ...mapState('binary/modules', [
+      'isLoading'
     ]),
-    buttonText () {
-      if (this.loading) {
-        return this.$t('status.loading')
-      }
-      if (this.importing) {
-        return this.$t('status.importing')
-      }
-      return this.$t('binary.modules.import_button')
-    },
-    disabled () {
-      return this.loading || this.importing
+    isDisabled () {
+      return this.isLoading || this.isImporting
     }
   },
   methods: {
-    ...mapActions('binary/module', [
+    ...mapActions('binary/modules', [
       'get'
     ]),
     onProgress () {
-      this.$emit('input', true)
+      this.$emit('importing', true)
     },
     onSuccess () {
-      this.$message({
-        message: this.$t('binary.modules.messages.import_success'),
-        type: 'success'
+      this.$message.success({
+        message: this.$t('binary.modules.messages.import_success')
       })
       this.get(false)
-      this.$emit('input', false)
+      this.$emit('importing', false)
       this.$refs.upload.clearFiles()
     },
     onError (e) {
-      this.$message.error(this.$t('binary.modules.messages.import_error', {
-        msg: e.message
-      }))
-      this.$emit('input', false)
+      this.$message.error({
+        message: this.$t('binary.modules.messages.import_error')
+      })
+      this.$emit('importing', false)
       this.$refs.upload.clearFiles()
     }
   }

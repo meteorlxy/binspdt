@@ -20,7 +20,7 @@ export default {
     TheBinaryAside
   },
   created () {
-    this.$store.dispatch('binary/module/get')
+    this.$store.dispatch('binary/modules/get')
   }
 }
 </script>

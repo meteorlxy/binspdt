@@ -41,3 +41,14 @@ yarn dev # Develop in watch mode
 ```sh
 yarn start
 ```
+
+## Notice
+
+You should have [IDA Pro](https://www.hex-rays.com/products/ida/) and corresponding version of [binexport](https://github.com/google/binexport) on your machine.
+
+- IDA Pro 6.8 => binexport 8
+- IDA Pro 6.95 => binexport 9
+- IDA Pro 7.0 => binexport 10
+
+**Be sure to obey their license**
+

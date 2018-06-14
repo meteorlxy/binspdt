@@ -1,12 +1,12 @@
-import module from './module'
-import analysis from './analysis'
+import modulesModule from './modules'
+import resultsModule from './results'
 
-const binary = {
+const binaryModule = {
   namespaced: true,
   modules: {
-    module,
-    analysis
+    modules: modulesModule,
+    results: resultsModule
   }
 }
 
-export default binary
+export default binaryModule

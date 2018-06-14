@@ -82,7 +82,7 @@ class KM(object):
   def __init__(self, matrix, dtype=int):
     # 输入权重矩阵
     if isinstance(matrix, np.ndarray):
-      self.matrix = matrix.copy()
+      self.matrix = matrix.copy().astype(dtype)
     else:
       self.matrix = np.array(matrix, dtype)
     # 获取权重矩阵行数x和列数y，保证x不大于y
@@ -107,7 +107,8 @@ class KM(object):
     # 存放计算结果
     self.result = None
     # 设置最大递归深度
-    sys.setrecursionlimit(self.div_y)
+    if self.div_y > sys.getrecursionlimit():
+      sys.setrecursionlimit(self.div_y)
   
   def run(self):
     '''

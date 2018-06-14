@@ -3,6 +3,14 @@ import numpy as np
 from ..asm import Module
 from ..algorithms import KM
 
+def normalize_api_name(raw_name):
+  norm_name = raw_name
+  if norm_name.startswith('__imp_'):
+    norm_name = norm_name.replace('__imp_', '')
+  if norm_name.endswith('_0'):
+    norm_name = norm_name.replace('_0', '')
+  return norm_name
+
 def load_calls(module):
   if not hasattr(module, 'has_loaded_calls'):
     for func in module.functions.values():
@@ -11,8 +19,8 @@ def load_calls(module):
     for edge in module.callgraph:
       src_func = module.functions[edge['source']]
       dest_func = module.functions[edge['destination']]
-      if dest_func.module_name != dest_func._module.name:
-        src_func.api_calls.add(dest_func.name)
+      if dest_func.type == 2 or dest_func.type == 3:
+        src_func.api_calls.add(normalize_api_name(dest_func.name))
       else:
         src_func.function_calls.append(dest_func)
     module.has_loaded_calls = True
@@ -54,48 +62,46 @@ def get_similarity_matrix(module_1, module_2, k):
       return sim_matrix
   return False
 
-def analyse_api(db, module_1_id, module_2_id, k=2):
-  result_key = 'api_km_result_module_%s_module_%s_k_%s' % (min(module_1_id, module_2_id), max(module_1_id, module_2_id), k)
-  result = db.load_result(result_key)
-  if result == None:
-    print('Generating API birthmark...')
-    module_1 = Module(db=db, module_id=module_1_id).load().load_callgraph()
-    module_2 = Module(db=db, module_id=module_2_id).load().load_callgraph()
+def analyse_api(db, module_1_id, module_2_id, k=2, algorithm='km', precision=1000):
+  print('Generating API birthmark...')
+  module_1 = Module(db=db, module_id=module_1_id).load().load_callgraph()
+  module_2 = Module(db=db, module_id=module_2_id).load().load_callgraph()
 
-    load_calls(module_1)
-    load_calls(module_2)
+  load_calls(module_1)
+  load_calls(module_2)
 
-    generate_api_birthmark(module_1, k)
-    generate_api_birthmark(module_2, k)
+  generate_api_birthmark(module_1, k)
+  generate_api_birthmark(module_2, k)
 
-    module_1.save(force=True)
-    module_2.save(force=True)
+  module_1.save(force=True)
+  module_2.save(force=True)
 
-    print('Caculating API birthmark similarity matrix...')
-    sim_matrix = get_similarity_matrix(module_1, module_2, k)
+  print('Caculating API birthmark similarity matrix...')
+  sim_matrix = get_similarity_matrix(module_1, module_2, k)
 
-    print('Running KM algorithm...')
-    km = KM(np.array(sim_matrix) * 1000)
-    match = km.run()
+  print('Running KM algorithm...')
+  km = KM(np.array(sim_matrix) * precision)
+  match = km.run()
 
-    print('Generating result...')
-    sim_temp = 0
-    for x in range(len(match['x'])):
+  print('Generating result...')
+  sim_temp = 0
+  for x in range(len(match['x'])):
+    if match['x'][x] != -1:
       sim_temp += sim_matrix[x][match['x'][x]]
-    overall_similarity = 2 * sim_temp / (len(sim_matrix) + len(sim_matrix[0]))
+  overall_similarity = 2 * sim_temp / (len(sim_matrix) + len(sim_matrix[0]))
 
-    result = {
-      'module_1': {
-        'name': module_1.name,
-        'function_num': len(module_1.functions),
-      },
-      'module_2': {
-        'name': module_2.name,
-        'function_num': len(module_2.functions),
-      },
+  result = {
+    'module_1': module_1.id,
+    'module_2': module_2.id,
+    'params': {
+      'k': k,
+      'algorithm': algorithm,
+      'precision': precision
+    },
+    'details': {
       'sim_matrix': sim_matrix,
       'match': match,
       'overall_similarity': overall_similarity
     }
-    db.save_result(result_key, result)
+  }
   return result

@@ -46,7 +46,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('binary/module', [
+    ...mapState('binary/modules', [
       'modules',
       'loading'
     ]),

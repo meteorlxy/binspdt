@@ -1,14 +1,41 @@
 import os
-import time
-import tempfile
-from binary.utils.db import db
 from celery import shared_task
+from binary.utils import db, analysis
+from binary.core.analysis.api import analyse_api as api
 
 @shared_task
-def module_import(upload_file, ida_version):
-  tmp_filename = os.path.join(tempfile.gettempdir(), 'binspdt.' + time.strftime('%Y%m%d%H%M%S', time.localtime()) + '.' + upload_file.name)
-  with open(tmp_filename, 'wb+') as f:
-    for chunk in upload_file.chunks(): 
-      f.write(chunk)
+def module_import(tmp_filename, ida_version):
   db.import_idb(tmp_filename, ida_version)
   os.remove(tmp_filename)
+
+@shared_task
+def analyse_api(params, path, type, module_1_id, module_2_id):
+  # Check the analysis status
+  status = analysis.check_status(path)
+
+  if status == 'done':
+    return True
+  
+  if status == 'pending':
+    return False
+
+  # Run the analysis
+  analysis.start(
+    path=path,
+    type=type,
+    module_1_id=module_1_id,
+    module_2_id=module_2_id
+  )
+
+  result = api(
+    db=db,
+    module_1_id=module_1_id,
+    module_2_id=module_2_id,
+    k=params['k'],
+    algorithm=params['algorithm']
+  )
+
+  analysis.finish(path=path, result=result)
+
+  return True
+

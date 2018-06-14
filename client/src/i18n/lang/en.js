@@ -5,16 +5,21 @@ const en = {
   buttons: {
     submit: 'Submit',
     refresh: 'Refresh',
-    remove: 'Remove'
+    remove: 'Remove',
+    details: 'Details'
   },
   status: {
     loading: 'Loading...',
     importing: 'Importing...',
-    analysing: 'Analysing...'
+    analysing: 'Analysing...',
+    executing: 'Executing...'
   },
   messages: {
     title: {
-      warning: 'Warning'
+      info: 'Info',
+      success: 'Success',
+      warning: 'Warning',
+      error: 'Error'
     }
   },
   routes: {
@@ -23,6 +28,7 @@ const en = {
     binary: 'Binary Code',
     source: 'Source Code',
     analysis: 'Analysis',
+    results: 'Analysis Results',
     api: 'API',
     basic_block: 'Basic Block'
   },
@@ -33,12 +39,20 @@ const en = {
   },
   binary: {
     modules: {
+      title: 'Binary Modules',
       import_button: 'Import idb File',
       table: {
         id: 'ID',
         name: 'Name',
         architecture: 'Architecture',
         import_time: 'Import Time',
+        exporter: 'Exporter',
+        base_address: 'Base Address',
+        md5: 'MD5',
+        sha1: 'SHA1',
+        functions_count: 'Functions Count',
+        basic_blocks_count: 'Basic Blocks Count',
+        instructions_count: 'Instructions Count',
         operation: 'Operation'
       },
       select: {
@@ -49,24 +63,57 @@ const en = {
       },
       messages: {
         get_success: 'Module loaded successfully',
-        get_error: 'Error occurs when loading modules ({msg})',
+        get_error: 'Error occurs when loading modules',
         import_success: 'Module imported successfully',
-        import_error: 'Error occurs when importing module ({msg})',
+        import_error: 'Error occurs when importing module',
         remove_confirm: 'Confirm to remove module {name} ?',
-        remove_success: 'Module removed successfully',
-        remove_error: 'Error occurs when removing module ({msg})'
+        remove_success: 'Removed module {name}',
+        remove_error: 'Removeing module {name}',
+        details_success: 'Loaded details of module {name}',
+        details_error: 'Loading details of module {name}'
       }
     },
     analysis: {
       api: {
-        call_depth: 'Call Depth',
+        title: 'API Similarity Analysis',
         select_modules_hint: 'Choose two modules to calculate their API similarity',
-        call_depth_hint: 'Set the call depth (k) of API birthmarking. [default 2]',
-        messages: {
-          analyse_success: 'API similarity analysed successfully',
-          analyse_error: 'Error occurs when analysing API similarity ({msg})'
-        },
-        result: 'Similarity: {result}'
+        call_depth: 'Call Depth [k]',
+        call_depth_hint: 'Set the call depth (k) of API birthmarking [default 2]',
+        match_algorithm: 'Match Algorithm',
+        match_algorithm_hint: 'Set the algorithm for matching similar functions [default KM]',
+        result: {
+          overall_similarity: 'Overall Similarity',
+          function_num: 'Number of Functions'
+        }
+      },
+      messages: {
+        start: 'Analysis started.',
+        pending: 'Analysis is in progress...',
+        done: 'Analysis finished. Go to the [Result] panel to check the result.',
+        error: 'Error occurs when starting analysis.'
+      }
+    },
+    results: {
+      title: 'Results of Similarity Analysis',
+      table: {
+        id: 'ID',
+        type: 'Type',
+        module_1: 'Module 1',
+        module_2: 'Module 2',
+        status: 'Status',
+        created_at: 'Create Time',
+        finished_at: 'Finish Time',
+        operation: 'Operation'
+      },
+      status: {
+        pending: 'Analysing',
+        done: 'Finished'
+      },
+      messages: {
+        get_success: 'Loaded list of analysis results',
+        get_error: 'Loading list of analysis results',
+        details_success: 'Loaded details of result {name}',
+        details_error: 'Loading details of result {name}'
       }
     }
   }

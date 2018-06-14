@@ -24,9 +24,14 @@ export default new Router({
           component: () => import('@/views/binary/Modules')
         },
         {
+          path: '/binary/results',
+          name: 'binary.results',
+          component: () => import('@/views/binary/Results')
+        },
+        {
           path: '/binary/analysis/api',
           name: 'binary.analysis.api',
-          component: () => import('@/views/binary/AnalysisApi')
+          component: () => import('@/views/binary/Analysis/AnalysisApi')
         }
       ]
     },

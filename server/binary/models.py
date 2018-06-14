@@ -16,7 +16,11 @@ class Module(models.Model):
     app_label = 'binary'
     db_table = 'modules'
 
+
 class ModuleObject(models.Model):
+  """
+  Store the pickled module object
+  """
   id = models.OneToOneField(Module, on_delete=models.CASCADE, primary_key=True, db_column='id')
   data = models.BinaryField()
 
@@ -24,10 +28,19 @@ class ModuleObject(models.Model):
     app_label = 'binary'
     db_table = 'module_objects'
 
-class ModuleResultObject(models.Model):
-  id = models.CharField(max_length=256, primary_key=True)
-  data = models.BinaryField()
+
+class ModuleResult(models.Model):
+  """
+  Record the module analysis result 
+  """
+  id = models.AutoField(primary_key=True)
+  path = models.CharField(max_length=256, unique=True)
+  type = models.CharField(max_length=32)
+  module_1_id = models.IntegerField()
+  module_2_id = models.IntegerField()
+  created_at = models.DateTimeField(auto_now_add=True)
+  finished_at = models.DateTimeField(null=True)
 
   class Meta:
     app_label = 'binary'
-    db_table = 'module_result_objects'
+    db_table = 'module_results'

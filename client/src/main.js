@@ -1,16 +1,18 @@
 import Vue from 'vue'
-import App from './App'
-import router from './router'
-import store from './store'
-import i18n from './i18n'
-import axios from '@/utils/axios'
+import App from '@/App'
+import router from '@/router'
+import store from '@/store'
+import i18n from '@/i18n'
 import api from '@/utils/api'
+import axios from '@/utils/axios'
+import helpers from '@/utils/helpers'
 import '@/utils/element-ui'
 import '@/assets/scss/fonts.scss'
 
 Vue.config.productionTip = false
-Vue.prototype.$axios = axios
 Vue.prototype.$api = api
+Vue.prototype.$axios = axios
+Vue.prototype.$helpers = helpers
 
 /* eslint-disable no-new */
 new Vue({

@@ -45,6 +45,10 @@ hr {
   padding: 0;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .text-right {
   text-align: right;
 }
@@ -57,6 +61,34 @@ hr {
 }
 
 .hint {
-  color: #999
+  color: #999;
+}
+
+.table-tools {
+  margin-bottom: 15px;
+}
+
+.el-form.table-details {
+  font-size: 0;
+  .details-section {
+    min-height: 80px;
+  }
+  .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+    .el-form-item__label {
+      width: 100px;
+      color: #99a9bf;
+    }
+    &.long {
+      width: 100%;
+    }
+    &.details {
+      label {
+        width: 150px;
+      }
+    }
+  }
 }
 </style>

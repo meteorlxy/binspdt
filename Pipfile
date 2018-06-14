@@ -8,10 +8,17 @@ name = "pypi"
 django = "*"
 celery = "*"
 redis = "*"
-eventlet = "*"
 numpy = "*"
+eventlet = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.6"
+
+[scripts]
+start = "python server/manage.py runserver"
+migrate = "python server/manage.py migrate"
+migrate-binary = "python server/manage.py migrate binary --database=binary_db"
+celery-start = "celery -A binspdt worker -l info -P eventlet"
+celery-purge = "celery -A binspdt purge"

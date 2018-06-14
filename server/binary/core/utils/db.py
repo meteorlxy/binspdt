@@ -68,6 +68,21 @@ class Database(object):
           result = result[0]
         return result
 
+  def get_module_details(self, module_id):
+    """
+    Get details of a module from database
+    """
+    with self.connection as conn:
+      with conn.cursor() as curs:
+        curs.execute('SELECT \
+          (SELECT COUNT(*) FROM ex_%(module_id)s_functions) AS functions_count, \
+          (SELECT COUNT(*) FROM ex_%(module_id)s_basic_blocks) AS basic_blocks_count, \
+          (SELECT COUNT(*) FROM ex_%(module_id)s_instructions) AS instructions_count', {
+          'module_id': module_id
+        })
+        result = zip_result(curs)
+        return result[0]
+
   def get_callgraph(self, module_id):
     """
     Get callgraph of a module from database
@@ -285,6 +300,9 @@ class Database(object):
           curs2.execute('DELETE FROM modules WHERE id=%(module_id)s', {
             'module_id': module_id
           })
+          curs2.execute('DELETE FROM module_objects WHERE id=%(module_id)s', {
+            'module_id': module_id
+          })
   
   def save_module(self, module_id, obj, force=False):
     """
@@ -318,44 +336,6 @@ class Database(object):
         curs.execute('SELECT data FROM module_objects \
           WHERE id=%(module_id)s', {
           'module_id': module_id
-        })
-        result = curs.fetchone()
-        if result != None:
-          result = pickle.loads(result[0])
-        return result
-
-  def save_result(self, result_key, obj, force=False):
-    """
-    Save the result pickled object to database
-    """
-    with self.connection as conn:
-      with conn.cursor() as curs:
-        if force:
-          curs.execute('INSERT INTO module_result_objects(id, data) \
-            VALUES(%(result_key)s, %(obj)s) \
-            ON conflict(id) \
-            DO UPDATE SET data=%(obj)s', {
-            'result_key': result_key,
-            'obj': pickle.dumps(obj)
-          })
-        else:
-          curs.execute('INSERT INTO module_result_objects(id, data) \
-            VALUES(%(result_key)s, %(obj)s) \
-            ON conflict(id) \
-            DO nothing', {
-            'result_key': result_key,
-            'obj': pickle.dumps(obj)
-          })
-  
-  def load_result(self, result_key):
-    """
-    Load the result pickled object from database
-    """
-    with self.connection as conn:
-      with conn.cursor() as curs:
-        curs.execute('SELECT data FROM module_result_objects \
-          WHERE id=%(result_key)s', {
-          'result_key': result_key
         })
         result = curs.fetchone()
         if result != None:

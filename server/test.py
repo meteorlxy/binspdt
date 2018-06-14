@@ -1,19 +1,13 @@
 from binspdt import settings
+from binary.core.algorithms import KM
 from binary.core.asm import Module
+from binary.utils import db, analysis
 from binary.core.utils.db import Database
-from binary.core.analysis.api import analyse_api
+from binary.core.analysis.api import analyse_api, generate_api_birthmark, load_calls, get_similarity_matrix
+from binary.tasks import analyse_api
 import numpy as np
-
-db = Database({
-  'IDA': settings.IDA,
-  'POSTGRES': settings.DATABASES['binary_db'],
-})
-
-
-# analyse_api(db=db, module_1_id=1, module_2_id=2, k=2)
-# result = db.load_result('api_km_result_module_%s_module_%s_k_%s' % (1, 2, 2))
-
-# db.save_result('api_km_result_module_%s_module_%s_k_%s' % (1, 2, 2), test, True)
+from os import path
+from binary.utils import storage
 
 '''
 Init a module

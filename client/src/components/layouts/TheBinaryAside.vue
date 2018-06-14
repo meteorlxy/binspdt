@@ -2,7 +2,6 @@
   <ElAside>
     <ElMenu
       :default-active="$route.path"
-      :default-openeds="['1']"
       :router="true">
       <ElMenuItem index="/binary/modules">
         <i class="el-icon-menu"></i>{{ $t('routes.modules') }}
@@ -13,6 +12,10 @@
 
         <ElMenuItem index="/binary/analysis/api">{{ $t('routes.api') }}</ElMenuItem>
       </ElSubmenu>
+
+      <ElMenuItem index="/binary/results">
+        <i class="el-icon-tickets"></i>{{ $t('routes.results') }}
+      </ElMenuItem>
     </ElMenu>
   </ElAside>
 </template>

@@ -14,6 +14,7 @@ class Module(object):
     self.expression_trees = dict()
 
     self.has_loaded_module = False
+    self.has_loaded_module_details = False
     self.has_loaded_functions = False
     self.has_loaded_basic_blocks = False
     self.has_loaded_instructions = False
@@ -40,6 +41,17 @@ class Module(object):
       self.import_time = module['import_time'].strftime("%Y-%m-%d %H:%M:%S")
 
       self.has_loaded_module = True
+    return self
+  
+  def load_module_details(self):
+    if not self.has_loaded_module_details:
+      module_details = self._db.get_module_details(module_id=self.id)
+      
+      self.functions_count = module_details['functions_count']
+      self.basic_blocks_count = module_details['basic_blocks_count']
+      self.instructions_count = module_details['instructions_count']
+
+      self.has_loaded_module_details = True
     return self
 
   def load_functions(self):

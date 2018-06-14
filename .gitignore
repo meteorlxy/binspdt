@@ -16,8 +16,8 @@ node_modules/
 # Django Settings
 server/binspdt/settings.py
 
-# Client Dist
-client/dist/
+# Docker compose files
+docker/docker-compose.yml
 
 # Other
 .DS_Store
