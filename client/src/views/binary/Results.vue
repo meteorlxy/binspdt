@@ -150,6 +150,7 @@
       :visible="showResult"
       :before-close="handleResultClose">
       <component
+        v-if="showResult"
         :is="currentResultComponent"
         :data="currentResultDetails"/>
 
