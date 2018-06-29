@@ -53,6 +53,7 @@ class BasicBlock(object):
             parent_module=self._module,
             operand_dict=op_dict
           )
+          inst.has_loaded_operands = True
       self.has_loaded_instructions = True
       self.has_loaded_operands = True
     return self

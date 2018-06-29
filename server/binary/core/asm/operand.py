@@ -1,3 +1,23 @@
+"""
+Expression Tree
+
+- type
+  - 1 Unknown
+  - 2 Immediate Value
+  - 3 Unknown
+  - 4 Memery Related Operator (+, *, ds:, ss:, fs: ...)
+  - 5 Register (ebx, esp ...)
+  - 6 Data Type (b1, b2, b4 ...)
+  - 7 Square brackets ([)
+
+- parent_id
+  ID of parent expression_node
+
+- position
+  Position of nodes that has the same parent_id
+"""
+
+
 class Operand(object):
   def __init__(self, parent_module, operand_dict):
     self._module = parent_module

@@ -6,6 +6,7 @@
     :on-progress="onProgress"
     :on-success="onSuccess"
     :on-error="onError"
+    :multiple="true"
     :disabled="isDisabled">
     <ElButton
       size="small"

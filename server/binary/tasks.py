@@ -10,32 +10,41 @@ def module_import(tmp_filename, ida_version):
 
 @shared_task
 def analyse_api(params, path, type, module_1_id, module_2_id):
-  # Check the analysis status
-  status = analysis.check_status(path)
+  try:
+    # Check the analysis status
+    status = analysis.check_status(path)
 
-  if status == 'done':
+    if status == 'done':
+      return True
+    
+    if status == 'pending':
+      return False
+    
+    if status == 'failed':
+      analysis.delete(path)
+
+    # Run the analysis
+    analysis.start(
+      path=path,
+      type=type,
+      module_1_id=module_1_id,
+      module_2_id=module_2_id
+    )
+
+    result = api(
+      db=db,
+      module_1_id=module_1_id,
+      module_2_id=module_2_id,
+      k=params['k'],
+      algorithm=params['algorithm']
+    )
+
+    analysis.finish(
+      path=path,
+      result=result
+    )
     return True
-  
-  if status == 'pending':
+  except Exception:
+    analysis.fail(path=path)
     return False
-
-  # Run the analysis
-  analysis.start(
-    path=path,
-    type=type,
-    module_1_id=module_1_id,
-    module_2_id=module_2_id
-  )
-
-  result = api(
-    db=db,
-    module_1_id=module_1_id,
-    module_2_id=module_2_id,
-    k=params['k'],
-    algorithm=params['algorithm']
-  )
-
-  analysis.finish(path=path, result=result)
-
-  return True
 

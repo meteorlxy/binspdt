@@ -174,6 +174,7 @@ class Module(object):
             parent_module=self,
             operand_dict=op_dict
           )
+          inst.has_loaded_operands = True
       self.has_loaded_functions = True
       self.has_loaded_basic_blocks = True
       self.has_loaded_instructions = True

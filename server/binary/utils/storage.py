@@ -1,5 +1,5 @@
 import pickle
-from os import path, makedirs
+from os import path, makedirs, unlink
 from django.conf import settings
 
 STORAGE_DIR = settings.STORAGE_DIR
@@ -67,6 +67,6 @@ def delete(target):
     return False
   
   # unlink the target file path
-  os.unlink(target)
+  unlink(target_path)
 
   return True

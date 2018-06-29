@@ -1,9 +1,11 @@
 import os
 import time
 import tempfile
-from binary.utils.db import db
+from binary.utils import analysis, db
 from binary.utils.decorators import method_allow, api_view
 from binary.core.asm import module
+from binary.models import ModuleResult
+from django.db.models import Q
 
 def handle_module_upload(upload_file, ida_version):
   tmp_filename = os.path.join(tempfile.gettempdir(), 'binspdt.' + time.strftime('%Y%m%d%H%M%S', time.localtime()) + '.' + upload_file.name)
@@ -40,8 +42,19 @@ def details(request, module_id):
   """
   response = {}
   if request.method == 'GET':
-    module
     response['data'] = db.get_module_details(module_id)
   if request.method == 'DELETE':
-    response['data'] = db.delete_module(module_id)
+    try:
+      # Delete all related analysis results
+      results = ModuleResult.objects.filter(Q(module_1_id=module_id) | Q(module_2_id=module_id))
+      for result in results:
+        analysis.delete(result.path)
+      # Delete the module itself
+      db.delete_module(module_id)
+    except Exception:
+      response['err'] = -1
+      response['msg'] = 'fail to delete module'
+      response['data'] = {
+        'module_id': module_id
+      }
   return response

@@ -40,6 +40,7 @@ class ModuleResult(models.Model):
   module_2_id = models.IntegerField()
   created_at = models.DateTimeField(auto_now_add=True)
   finished_at = models.DateTimeField(null=True)
+  failed_at = models.DateTimeField(null=True)
 
   class Meta:
     app_label = 'binary'

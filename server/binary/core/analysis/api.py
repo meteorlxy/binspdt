@@ -1,4 +1,3 @@
-import pickle
 import numpy as np
 from ..asm import Module
 from ..algorithms import KM
@@ -26,7 +25,7 @@ def load_calls(module):
     module.has_loaded_calls = True
 
 def get_k_depth(f, f_b, k):
-  if k == 0:
+  if k < 1:
     return
   for func_call in f.function_calls:
     f_b |= func_call.api_calls
