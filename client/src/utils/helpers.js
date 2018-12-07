@@ -1,7 +1,10 @@
 import format from 'date-fns/format'
 
-const formatDateTime = str => format(str, 'YYYY-MM-DD HH:mm:ss')
+export const formatDateTime = str => format(str, 'YYYY-MM-DD HH:mm:ss')
+
+export const noop = () => {}
 
 export default {
-  formatDateTime
+  formatDateTime,
+  noop,
 }

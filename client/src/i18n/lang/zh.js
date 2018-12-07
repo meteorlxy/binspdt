@@ -1,7 +1,4 @@
-import zhElement from 'element-ui/lib/locale/lang/zh-CN'
-
 const zh = {
-  ...zhElement,
   buttons: {
     submit: '提交',
     refresh: '刷新',

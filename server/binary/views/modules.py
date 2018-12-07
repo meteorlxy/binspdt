@@ -1,60 +1,102 @@
 import os
 import time
 import tempfile
-from binary.utils import analysis, db
-from binary.utils.decorators import method_allow, api_view
-from binary.core.asm import module
-from binary.models import ModuleResult
-from django.db.models import Q
 
-def handle_module_upload(upload_file, ida_version):
-  tmp_filename = os.path.join(tempfile.gettempdir(), 'binspdt.' + time.strftime('%Y%m%d%H%M%S', time.localtime()) + '.' + upload_file.name)
-  with open(tmp_filename, 'wb') as f:
-    for chunk in upload_file.chunks(): 
-      f.write(chunk)
-  db.import_idb(tmp_filename, ida_version)
-  os.remove(tmp_filename)
+from django.core.paginator import Paginator
 
-@method_allow(['POST'])
-@api_view(request_json=False)
-def upload(request, ida_version = '6.8'):
-  """
-  Import IDB file
-  """
-  handle_module_upload(request.FILES['file'], ida_version)
-  return {}
+from rest_framework import status
+from rest_framework.viewsets import ViewSet
+from rest_framework.response import Response
 
-@method_allow(['GET'])
-@api_view()
-def index(request):
-  """
-  Get modules list
-  """
-  return {
-    'data': db.get_modules()
-  }
+from binary.models import Module
+from binary.serializers.module import ModuleSerializer
+from binary.utils import db
 
-@method_allow(['GET', 'DELETE'])
-@api_view()
-def details(request, module_id):
+class Modules(ViewSet):
   """
-  Show details of a module or delete a module
+  Handle modules request
   """
-  response = {}
-  if request.method == 'GET':
-    response['data'] = db.get_module_details(module_id)
-  if request.method == 'DELETE':
+  def index(self, request, format='json'):
+    """
+    Get modules list
+    """
+    params = {
+      'page': request.GET.get('page', 1),
+      'per_page': request.GET.get('per_page', 25),
+      'order_by': request.GET.get('order_by', 'id'),
+    }
+    if params['order_by'] not in tuple(field.name for field in Module._meta.get_fields()):
+      params['order_by'] = 'id'
+
+    qeuryset = Module.objects.all().order_by(params['order_by'])
+    paginator = Paginator(qeuryset, params['per_page'])
+    page = paginator.get_page(params['page'])
+    data = ModuleSerializer(page.object_list, many=True).data
+
+    return Response({
+      'page': page.number,
+      'page_count': paginator.num_pages,
+      'data': data,
+      'count': paginator.count,
+    })
+
+  def count(self, request, format='json'):
+    """
+    Get modules count
+    """
+    return Response({
+      'data': Module.objects.count(),
+    })
+
+  def details(self, request, module_id, format='json'):
+    """
+    Get module detail
+    """
+    return Response({
+      'data': db.get_module_details(module_id),
+    })
+
+  def delete(self, request, module_id, format='json'):
+    """
+    Delete one module
+    """
+    # try:
+    #   # Delete all related analysis results
+    #   results = ModuleResult.objects.filter(Q(module_1_id=module_id) | Q(module_2_id=module_id))
+    #   for result in results:
+    #     analysis.delete(result.path)
+    #   # Delete the module itself
+    #   db.delete_module(module_id)
+    # except Exception:
+    #   response['err'] = -1
+    #   response['msg'] = 'fail to delete module'
+    #   response['data'] = {
+    #     'module_id': module_id
+    #   }
+    return Response({
+      'data': '',
+    })
+  
+  def create(self, ida_version='6.8', format='json'):
+    """
+    Create a module from uploaded idb file
+    """
     try:
-      # Delete all related analysis results
-      results = ModuleResult.objects.filter(Q(module_1_id=module_id) | Q(module_2_id=module_id))
-      for result in results:
-        analysis.delete(result.path)
-      # Delete the module itself
-      db.delete_module(module_id)
+      # Get the upload file
+      upload_file = request.FILES['file']
+
+      # Save the uploaded file to temp dir
+      tmp_filename = os.path.join(tempfile.gettempdir(), 'binspdt.' + time.strftime('%Y%m%d%H%M%S', time.localtime()) + '.' + upload_file.name)
+      with open(tmp_filename, 'wb') as f:
+        for chunk in upload_file.chunks(): 
+          f.write(chunk)
+
+      # Import the uploaded idb file
+      db.import_idb(tmp_filename, ida_version)
+
+      # Delete the uploaded file from temp dir
+      os.remove(tmp_filename)
+
+      return Response(status=status.HTTP_201_CREATED)
     except Exception:
-      response['err'] = -1
-      response['msg'] = 'fail to delete module'
-      response['data'] = {
-        'module_id': module_id
-      }
-  return response
+      return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

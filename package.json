@@ -4,38 +4,49 @@
     "dev": "node client/scripts/dev.js",
     "build": "node client/scripts/build.js",
     "lint": "eslint --fix --ext .js,.vue client/src client/scripts",
-    "makemigrations": "pipenv run python server/manage.py makemigrations",
-    "migrate": "pipenv run python server/manage.py migrate binary --database=binary_db && pipenv run python server/manage.py migrate",
-    "start": "pipenv run python server/manage.py runserver",
+    "makemigrations": "cd server && pipenv run python manage.py makemigrations",
+    "migrate": "cd server && pipenv run python manage.py migrate binary --database=binary_db && pipenv run python server/manage.py migrate",
+    "start": "cd server && pipenv run python manage.py runserver",
     "celery": "cd server && pipenv run celery -A binspdt worker -l INFO -P eventlet",
-    "celery:purge": "cd server && pipenv run celery -A binspdt purge"
+    "celery:purge": "cd server && pipenv run celery -A binspdt purge",
+    "test:server": "cd server && pipenv run python manage.py test"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.8",
+    "@fortawesome/free-regular-svg-icons": "^5.5.0",
+    "@fortawesome/free-solid-svg-icons": "^5.5.0",
+    "@fortawesome/vue-fontawesome": "^0.1.2",
+    "admin-lte": "almasaeed2010/AdminLTE#v3-dev",
     "axios": "^0.18.0",
+    "datatables.net": "^1.10.19",
+    "datatables.net-bs": "^1.10.19",
     "date-fns": "^1.29.0",
-    "element-ui": "^2.4.1",
+    "js-cookie": "^2.2.0",
+    "nprogress": "^0.2.0",
+    "vee-validate": "^2.1.4",
     "vue": "^2.5.16",
     "vue-i18n": "^7.8.0",
-    "vue-router": "^3.0.1",
+    "vue-notification": "euvl/vue-notification#master",
+    "vue-router": "^3.0.2",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
-    "@babel/core": "7.0.0-beta.47",
-    "@vue/babel-preset-app": "^3.0.0-beta.15",
+    "@babel/core": "^7.1.5",
+    "@vue/babel-preset-app": "^3.1.1",
     "autoprefixer": "^8.6.0",
     "babel-eslint": "^8.2.3",
-    "babel-loader": "^8.0.0-beta.3",
+    "babel-loader": "^8.0.4",
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.11",
-    "eslint": "^4.19.1",
-    "eslint-config-standard": "^11.0.0",
+    "eslint": "^5.8.0",
+    "eslint-config-standard": "^12.0.0",
     "eslint-friendly-formatter": "^4.0.1",
-    "eslint-loader": "^2.0.0",
-    "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.8.0",
-    "eslint-plugin-standard": "^3.1.0",
-    "eslint-plugin-vue": "^4.5.0",
+    "eslint-loader": "^2.1.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^5.0.0-beta.3",
     "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.4.0",
@@ -53,20 +64,6 @@
     "webpack": "^4.10.2",
     "webpack-cli": "^3.0.1",
     "webpack-merge": "^4.1.2"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "standard"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
   },
   "engines": {
     "node": ">= 8.0.0",

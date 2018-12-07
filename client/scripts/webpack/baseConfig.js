@@ -113,7 +113,12 @@ const webpackBaseConfig = {
         to: utils.path.dist('static'),
         ignore: ['.*']
       }
-    ])
+    ]),
+
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
+    })
   ],
   node: {
     setImmediate: false,

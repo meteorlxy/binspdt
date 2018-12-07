@@ -1,13 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import binaryModule from './modules/binary'
+import binary from './binary'
+import website from './website'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   modules: {
-    binary: binaryModule
-  }
+    binary,
+    website,
+  },
 })
 
 export default store

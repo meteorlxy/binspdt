@@ -26,7 +26,7 @@ PUBLIC_DIR = os.path.join(BASE_DIR, '..', 'client', 'public')
 SECRET_KEY = 'q8#%f6(8_cf_!p^zqt$-s0*+)ia4^8#f#_j*c+kbxp0*8#3^@m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -39,8 +39,10 @@ INSTALLED_APPS = [
   'django.contrib.sessions',
   'django.contrib.messages',
   'django.contrib.staticfiles',
-  'binary.apps.BinaryConfig',
-  # 'source.apps.SourceConfig',
+  
+  'rest_framework',
+  'website',
+  'binary',
 ]
 
 MIDDLEWARE = [
@@ -80,7 +82,7 @@ WSGI_APPLICATION = 'binspdt.wsgi.application'
 DATABASES = {
   'default': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': 'binspdt_web',
+    'NAME': 'binspdt_website',
     'USER': 'postgres',
     'PASSWORD': 'postgres',
     'HOST': '127.0.0.1',
@@ -116,7 +118,6 @@ AUTH_PASSWORD_VALIDATORS = [
   },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -140,6 +141,29 @@ STATICFILES_DIRS = [
   os.path.join(PUBLIC_DIR, 'static'),
 ]
 
+# Celery Config
+# http://docs.celeryproject.org
+
+CELERY_APP = 'binspdt'
+CELERY_TIME_ZONE = TIME_ZONE
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+# REST Framework Config
+# https://www.django-rest-framework.org/api-guide/settings/
+
+REST_FRAMEWORK = {
+  'DEFAULT_AUTHENTICATION_CLASSES': (
+    'rest_framework.authentication.SessionAuthentication',
+    'rest_framework.authentication.TokenAuthentication',
+  ),
+  'DEFAULT_PERMISSION_CLASSES': (
+    'rest_framework.permissions.IsAuthenticated',
+  )
+}
+
+# BinSPDT Config
+
 IDA = {
   '6.8': {
     'PATH': r'E:\Program\IDA Pro\IDA Pro 6.8',
@@ -151,8 +175,3 @@ IDA = {
     'PATH': r'E:\Program\IDA Pro\IDA Pro 7.0',
   },
 }
-
-CELERY_APP = 'binspdt'
-CELERY_TIME_ZONE = TIME_ZONE
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'

@@ -1,7 +1,4 @@
-import enElement from 'element-ui/lib/locale/lang/en'
-
 const en = {
-  ...enElement,
   buttons: {
     submit: 'Submit',
     refresh: 'Refresh',
