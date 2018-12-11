@@ -13,8 +13,8 @@ module.exports = {
   configureWebpack: {
     plugins: [
       new CopyWebpackPlugin([{
-        from: pathResolve('client/src/assets/static'),
-        to: pathResolve('client/public/static'),
+        from: pathResolve('client/src/assets/public'),
+        to: pathResolve('client/public'),
       }]),
     ],
   },
