@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import dotenv
+
+dotenv.load_dotenv()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,9 +29,31 @@ PUBLIC_DIR = os.path.join(BASE_DIR, '..', 'client', 'public')
 SECRET_KEY = 'q8#%f6(8_cf_!p^zqt$-s0*+)ia4^8#f#_j*c+kbxp0*8#3^@m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = []
+
+# Postgres config
+
+POSTGRES_HOST = os.getenv('POSTGRES_HOST', None)
+POSTGRES_PORT = os.getenv('POSTGRES_PORT', '5432')
+POSTGRES_DB_WEBSITE = os.getenv('POSTGRES_DB_WEBSITE', None)
+POSTGRES_DB_BINARY = os.getenv('POSTGRES_DB_BINARY', None)
+POSTGRES_USER = os.getenv('POSTGRES_USER', None)
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', None)
+
+# Redis config
+
+REDIS_HOST = os.getenv('REDIS_HOST', None)
+REDIS_PORT = os.getenv('REDIS_PORT', '6379')
+REDIS_DB = os.getenv('REDIS_DB', '0')
+REDIS_USER = os.getenv('REDIS_USER', None)
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD', None)
+REDIS_URL=os.getenv('REDIS_URL',
+  'redis://{0}:{1}@{2}:{3}/{4}'.format(REDIS_USER or '', REDIS_PASSWORD, REDIS_HOST, REDIS_PORT, REDIS_DB)
+  if REDIS_PASSWORD else
+  'redis://{0}:{1}/{2}'.format(REDIS_HOST, REDIS_PORT, REDIS_DB)
+)
 
 # Application definition
 
@@ -39,10 +64,13 @@ INSTALLED_APPS = [
   'django.contrib.sessions',
   'django.contrib.messages',
   'django.contrib.staticfiles',
-  
+
   'rest_framework',
+  'rest_framework.authtoken',
+
   'website',
   'binary',
+  # 'source.apps.SourceConfig',
 ]
 
 MIDDLEWARE = [
@@ -75,26 +103,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'binspdt.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
   'default': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': 'binspdt_website',
-    'USER': 'postgres',
-    'PASSWORD': 'postgres',
-    'HOST': '127.0.0.1',
-    'PORT': '5432',
+    'NAME': POSTGRES_DB_WEBSITE,
+    'USER': POSTGRES_USER,
+    'PASSWORD': POSTGRES_PASSWORD,
+    'HOST': POSTGRES_HOST,
+    'PORT': POSTGRES_PORT,
   },
   'binary_db': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': 'binspdt_binary',
-    'USER': 'postgres',
-    'PASSWORD': 'postgres',
-    'HOST': '127.0.0.1',
-    'PORT': '5432',
+    'NAME': POSTGRES_DB_BINARY,
+    'USER': POSTGRES_USER,
+    'PASSWORD': POSTGRES_PASSWORD,
+    'HOST': POSTGRES_HOST,
+    'PORT': POSTGRES_PORT,
   }
 }
 
@@ -141,13 +168,14 @@ STATICFILES_DIRS = [
   os.path.join(PUBLIC_DIR, 'static'),
 ]
 
+
 # Celery Config
 # http://docs.celeryproject.org
 
 CELERY_APP = 'binspdt'
 CELERY_TIME_ZONE = TIME_ZONE
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
 
 # REST Framework Config
 # https://www.django-rest-framework.org/api-guide/settings/
@@ -166,12 +194,12 @@ REST_FRAMEWORK = {
 
 IDA = {
   '6.8': {
-    'PATH': r'E:\Program\IDA Pro\IDA Pro 6.8',
+    'PATH': os.getenv('IDA_68_PATH', None),
   },
   '6.95': {
-    'PATH': r'E:\Program\IDA Pro\IDA Pro 6.95',
+    'PATH': os.getenv('IDA_695_PATH', None),
   },
   '7.0': {
-    'PATH': r'E:\Program\IDA Pro\IDA Pro 7.0',
+    'PATH': os.getenv('IDA_70_PATH', None),
   },
 }

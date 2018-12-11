@@ -13,18 +13,14 @@
 # node_modules
 node_modules/
 
-# Django Settings
-server/binspdt/settings.py
-
 # Docker compose files
 docker/docker-compose.yml
 
 # Client dist files
 client/public
 
-# local env files
-.env.local
-.env.*.local
+# dotenv file
+.env
 
 # Other
 .DS_Store
