@@ -1,186 +1,139 @@
 <template>
-  <LoginWrapper>
-    <LoginLogo>
-      <router-link :to="{ name: 'home' }">
-        <b>Bin</b>SPDT
-      </router-link>
-    </LoginLogo>
+  <VContent>
+    <VContainer
+      fluid
+      fill-height>
+      <VLayout
+        align-center
+        justify-center>
+        <VFlex
+          xs12
+          sm8
+          md6
+          lg4>
+          <VCard class="elevation-12">
+            <VToolbar
+              flat
+              color="white">
+              <VToolbarTitle>
+                Login to BinSPDT
+              </VToolbarTitle>
 
-    <LoginCard>
-      <span slot="message">Sign in to BinSPDT</span>
+              <VSpacer/>
+            </VToolbar>
 
-      <LoginInput
-        icon="user"
-        type="text" 
-        name="username"
-        placeholder="Username"
-        :is-valid="!Boolean(errors.first('username')) && fields['username'] && fields['username'].validated && fields['username'].valid"
-        :is-invalid="Boolean(errors.first('username'))"
-        :feedback-invalid="errors.first('username')"
-        v-validate="{ required: true, min: 3, max: 30 }"
-        v-model="loginForm.username">
-      </LoginInput>
+            <VCardText>
+              <VForm>
+                <VTextField
+                  v-model="loginForm.username"
+                  v-validate="{ required: true, min: 3, max: 30 }"
+                  type="text"
+                  name="username"
+                  label="Username"
+                  prepend-icon="person"
+                  :error-messages="errors.collect('username')"/>
 
-      <LoginInput
-        icon="lock"
-        type="password" 
-        name="password"
-        ref="password"
-        placeholder="Password"
-        :is-valid="!Boolean(errors.first('password')) && fields['password'] && fields['password'].validated && fields['password'].valid"
-        :is-invalid="Boolean(errors.first('password'))"
-        :feedback-invalid="errors.first('password')"
-        v-validate="{ required: true, min: 8, max: 30 }"
-        v-model="loginForm.password">
-      </LoginInput>
+                <VTextField
+                  v-model="loginForm.password"
+                  v-validate="{ required: true, min: 8, max: 30 }"
+                  :type="showPassword ? 'text' : 'password'"
+                  name="password"
+                  label="Password"
+                  prepend-icon="lock"
+                  :append-icon="showPassword ? 'visibility_off' : 'visibility'"
+                  :error-messages="errors.collect('password')"
+                  @click:append="showPassword = !showPassword"/>
+              </VForm>
+            </VCardText>
 
-      <div class="row">
-        <div class="col-8">
-          <div class="form-check">
-            <label class="form-check-label">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                v-model="rememberMe">
-                <!-- @input="setRememberMe($event.target.value)"> -->
-              <span>
-                Remember me
-              </span>
-            </label>
-          </div>
-        </div>
+            <VCardActions>
+              <VBtn
+                :to="{ name: 'register' }"
+                flat
+                small>
+                <VIcon
+                  class="mr-1"
+                  left
+                  small>
+                  person_add
+                </VIcon>
 
-        <div class="col-4">
-          <button
-            class="btn btn-primary btn-block btn-flat"
-            :disabled="!isFormValid || isLoading"
-            @click="handleLogin">
-            <FaIcon
-              v-show="isLoading"
-              class="mr-2"
-              icon="spinner"
-              spin />
-            Sign In
-          </button>
-        </div>
-      </div>
+                <span>Regiter a new account</span>
+              </VBtn>
 
-      <p class="text-center my-2">- OR -</p>
+              <VSpacer/>
 
-      <router-link
-        :to="{ name: 'register' }"
-        class="d-block mb-1">
-        I forgot my password
-      </router-link>
-
-      <router-link
-        :to="{ name: 'register' }"
-        class="d-block">
-        Register a new account
-      </router-link>
-    </LoginCard>
-  </LoginWrapper>
+              <VBtn
+                color="primary"
+                :disabled="isLoading || !isFormValid"
+                :loading="isLoading"
+                @click="handleLogin">
+                <span>Login</span>
+              </VBtn>
+            </VCardActions>
+          </VCard>
+        </VFlex>
+      </VLayout>
+    </VContainer>
+  </VContent>
 </template>
 
-<script>
-import LoginCard from '@/components/admin-lte/LoginCard'
-import LoginInput from '@/components/admin-lte/LoginInput'
-import LoginLogo from '@/components/admin-lte/LoginLogo'
-import LoginWrapper from '@/components/admin-lte/LoginWrapper'
-import {
-  mapActions,
-  mapMutations,
-} from 'vuex'
+<script lang="ts">
+import { Vue, Component } from 'vue-property-decorator'
+import { namespace } from 'vuex-class'
 import { requestCatch } from '@/utils/catchError'
 
-export default {
-  name: 'Login',
+@Component
+export default class Login extends Vue {
+  loginForm = {
+    username: '',
+    password: '',
+  }
 
-  components: {
-    LoginCard,
-    LoginInput,
-    LoginLogo,
-    LoginWrapper,
-  },
+  showPassword: boolean = false
 
-  data () {
-    return {
-      loginForm: {
-        username: '',
-        password: '',
-      },
-      isLoading: false,
+  isLoading: boolean = false
+
+  get isFormValid () {
+    return !this.errors.any()
+  }
+
+  @namespace('website/user').Action('login') login
+
+  async handleLogin () {
+    await this.$validator.validateAll()
+
+    if (!this.isFormValid) {
+      return false
     }
-  },
 
-  computed: {
-    rememberMe: {
-      get () {
-        return this.$store.state.website.user.rememberMe
-      },
-      set (val) {
-        this.setRememberMe(val)
-      }
-    },
+    try {
+      this.isLoading = true
+      await this.login(this.loginForm)
 
-    isFormValid () {
-      return !this.errors.any()
-    },
-  },
-
-  methods: {
-    ...mapActions('website/user', [
-      'login',
-    ]),
-
-    ...mapMutations('website/user', [
-      'setRememberMe',
-    ]),
-
-    async handleLogin () {
-      await this.$validator.validateAll()
-
-      if (!this.isFormValid) {
-        return false
-      }
-
-      try {
-        this.isLoading = true
-        const response = await this.login(this.loginForm)
-
-        if (response.status === 200) {
-          this.$router.push({
-            path: this.$route.query.redirect || '/',
-          }, () => {
-            this.$notify({
-              type: 'success',
-              text: 'Login Successfully.',
-            })
-          })
-        }
-      } catch (error) {
-        requestCatch(error, (res) => {
-          if (res.status === 401) {
-            this.$notify({
-              type: 'danger',
-              title: 'Login Failed',
-              text: 'Incorrect username or password.',
-            })
-          } else {
-            this.$notify(error.notify)
-          }
+      this.$router.push({
+        path: <string> this.$route.query.redirect || '/',
+      }, () => {
+        this.$notify({
+          type: 'success',
+          text: 'Login Successfully.',
         })
-      } finally {
-        this.isLoading = false
-      }
+      })
+    } catch (error) {
+      requestCatch(error, (res) => {
+        if (res.status === 401) {
+          this.$notify({
+            type: 'danger',
+            title: 'Login Failed',
+            text: 'Incorrect username or password.',
+          })
+        } else {
+          this.$notify(error.notify)
+        }
+      })
+    } finally {
+      this.isLoading = false
     }
-  },
+  }
 }
 </script>
-
-<style lang="scss">
-body {
-  background: #e9ecef;
-}
-</style>
-

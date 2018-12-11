@@ -1,90 +1,67 @@
 <template>
-  <Sidebar>
-    <SidebarBrand slot="top">
-      <span class="fa-layers fa-fw ml-3 mr-2">
-        <FaIcon
-          icon="search"
-          transform="grow-8" />
+  <VNavigationDrawer
+    app
+    fixed
+    clipped
+    :mobile-break-point="1264"
+    :value="value"
+    @input="handleInput">
+    <VList class="pt-0">
+      <VListTile class="py-2">
+        <VListTileAvatar color="indigo">
+          <span class="white--text headline">
+            {{ username.charAt(0).toUpperCase() }}
+          </span>
+        </VListTileAvatar>
 
-        <FaIcon
-          :icon="['far', 'eye']"
-          transform="shrink-8 up-2 left-1.5" />
-      </span>
+        <VListTileContent>
+          <VListTileTitle>{{ username }}</VListTileTitle>
 
-      <span class="brand-text font-weight-light">BinSPDT</span>
-    </SidebarBrand>
+          <VListTileSubTitle>Welcome to BinSPDT!</VListTileSubTitle>
+        </VListTileContent>
+      </VListTile>
 
-    <SidebarUserPanel slot="sub">
-      <FaIcon
-        slot="image"
-        class="text-white mx-2"
-        :icon="['far', 'user']"
-        transform="grow-4 down-4" />
-      
-      <span
-        slot="info"
-        class="text-white">
-        Welcome, {{ username }} !
-      </span>
-    </SidebarUserPanel>
+      <VDivider class="mb-2"/>
 
-    <SidebarItem
-      :to="{ name: 'dashboard' }"
-      icon="tachometer-alt">
-      Dashboard
-    </SidebarItem>
+      <VListTile
+        :to="{ name: 'dashboard' }"
+        exact>
+        <VListTileAction>
+          <VIcon>dashboard</VIcon>
+        </VListTileAction>
 
-    <SidebarItem
-      :to="{ name: 'dashboard.modules' }"
-      icon="cubes">
-      Modules
-    </SidebarItem>
+        <VListTileContent>
+          <VListTileTitle>Dashboard</VListTileTitle>
+        </VListTileContent>
+      </VListTile>
 
-    <SidebarItemTree
-      icon="cubes">
-      <template slot="title">
-        Modules
-      </template>
-      
-      <SidebarItem
+      <VListTile
         :to="{ name: 'dashboard.modules' }"
-        icon="list-ul">
-        List
-      </SidebarItem>
-      
-      <SidebarItem
-        :to="{ name: 'dashboard.modules' }"
-        icon="upload">
-        Upload
-      </SidebarItem>
-    </SidebarItemTree>
-  </Sidebar>
+        exact>
+        <VListTileAction>
+          <VIcon>developer_board</VIcon>
+        </VListTileAction>
+
+        <VListTileContent>
+          <VListTileTitle>Modules</VListTileTitle>
+        </VListTileContent>
+      </VListTile>
+    </VList>
+  </VNavigationDrawer>
 </template>
 
-<script>
-import { mapState } from 'vuex'
-import Sidebar from '@/components/admin-lte/Sidebar'
-import SidebarBrand from '@/components/admin-lte/SidebarBrand'
-import SidebarItem from '@/components/admin-lte/SidebarItem'
-import SidebarItemTree from '@/components/admin-lte/SidebarItemTree'
-import SidebarUserPanel from '@/components/admin-lte/SidebarUserPanel'
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator'
+import { namespace } from 'vuex-class'
 
-export default {
-  name: 'TheSidebar',
+@Component
+export default class TheSidebar extends Vue {
+  @Prop(Boolean) value!: boolean | null
 
-  components: {
-    Sidebar,
-    SidebarBrand,
-    SidebarItem,
-    SidebarItemTree,
-    SidebarUserPanel,
-  },
+  @namespace('website/user').State('username') username
 
-  computed: {
-    ...mapState('website/user', [
-      'username',
-    ]),
-  },
+  handleInput (payload: boolean | null): void {
+    this.$emit('input', payload)
+  }
 }
 </script>
-

@@ -1,0 +1,5 @@
+import './font-awesome'
+import './helpers'
+import './vee-validate'
+import './vue-notification'
+import './vuetify'

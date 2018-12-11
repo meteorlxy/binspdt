@@ -1,37 +1,29 @@
 <template>
-  <Breadcrumb class="text-muted">
-    <BreadcrumbItem>
-      <FaIcon
-        class="mr-1"
-        icon="tachometer-alt"
-      />
-    </BreadcrumbItem>
-
-    <BreadcrumbItem
-      v-for="(route, index) in routeList"
-      :key="route.path"
-      :to="index === routeList.length - 1 ? '' : route.path">
-      {{ route.meta.linkText }}
-    </BreadcrumbItem>
-  </Breadcrumb>
+  <VBreadcrumbs :items="items">
+    <template
+      slot="item"
+      slot-scope="{ item: { text, href } }">
+      <VBreadcrumbsItem
+        :to="href"
+        exact>
+        {{ text }}
+      </VBreadcrumbsItem>
+    </template>
+  </VBreadcrumbs>
 </template>
 
-<script>
-import Breadcrumb from '@/components/admin-lte/Breadcrumb'
-import BreadcrumbItem from '@/components/admin-lte/BreadcrumbItem'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 
-export default {
-  name: 'TheBreadCrumb',
-
-  components: {
-    Breadcrumb,
-    BreadcrumbItem,
-  },
-
-  computed: {
-    routeList () {
-      return this.$route.matched.filter(route => route.meta.linkText)
-    }
-  },
+@Component
+export default class TheBreadcrumb extends Vue {
+  get items () {
+    return this.$route.matched.filter(item => item.meta.linkText).map((item, index) => {
+      return {
+        text: item.meta.linkText,
+        href: item.path,
+      }
+    })
+  }
 }
 </script>

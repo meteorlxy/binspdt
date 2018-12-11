@@ -1,38 +1,13 @@
 <template>
-  <div class="row">
-    <div class="col-12 col-sm-6">
-      <RouterLink :to="{ name: 'dashboard.modules' }">
-        <TheModulesBox />
-      </RouterLink>
-    </div>
-
-    <div class="col-12 col-sm-6">
-      <RouterLink :to="{ name: '' }">
-      </RouterLink>
-    </div>
-  </div>
+  <main>
+    DashboardHome
+  </main>
 </template>
 
-<script>
-import TheModulesBox from './_components/TheModulesBox'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 
-export default {
-  name: 'DashboardHome',
-
-  components: {
-    TheModulesBox,
-  },
+@Component
+export default class DashboardHome extends Vue {
 }
 </script>
-
-<style lang="scss" scoped>
-@import '~@/assets/scss/variables';
-
-.box-link {
-  color: $gray-900;
-  &:hover {
-    color: $gray-700;
-  }
-}
-</style>
-

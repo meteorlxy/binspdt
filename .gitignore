@@ -19,6 +19,13 @@ server/binspdt/settings.py
 # Docker compose files
 docker/docker-compose.yml
 
+# Client dist files
+client/public
+
+# local env files
+.env.local
+.env.*.local
+
 # Other
 .DS_Store
 *.log

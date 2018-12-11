@@ -1,19 +1,20 @@
 <template>
-  <div>
-    <RouterView />
+  <VApp>
+    <TheNotification/>
 
-    <TheNotification />
-  </div>
+    <RouterView/>
+  </VApp>
 </template>
 
-<script>
-import TheNotification from '@/components/TheNotification'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+import TheNotification from '@/components/TheNotification.vue'
 
-export default {
-  name: 'App',
-
+@Component({
   components: {
     TheNotification,
   },
+})
+export default class App extends Vue {
 }
 </script>

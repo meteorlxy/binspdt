@@ -1,61 +1,69 @@
 <template>
-  <div class="wrapper">
-    <TheNavbar />
+  <div>
+    <TheNavbar @toggle-sidebar="isSidebarOpen = !isSidebarOpen"/>
 
-    <TheSidebar />
+    <TheSidebar v-model="isSidebarOpen"/>
 
-    <TheControlSidebar />
+    <VContent>
+      <VLayout
+        row
+        wrap>
+        <VFlex
+          xs12
+          sm6>
+          <h2
+            class="pl-3"
+            :class="{
+              'py-3': $vuetify.breakpoint.mdAndUp,
+              'pt-3 pb-0': $vuetify.breakpoint.smAndDown,
+            }">
+            {{ $route.meta.title }}
+          </h2>
+        </VFlex>
 
-    <TheMainContent>
-      <RouterView />
-    </TheMainContent>
+        <VFlex
+          xs12
+          sm6
+          class="text-sm-right">
+          <TheBreadcrumb class="pl-3 d-inline-block"/>
+        </VFlex>
+      </VLayout>
 
-    <TheMainFooter />
+      <VContainer
+        class="px-3 pb-3 pt-0"
+        fluid
+        full-height>
+        <VSlideYReverseTransition mode="out-in">
+          <RouterView/>
+        </VSlideYReverseTransition>
+      </VContainer>
+    </VContent>
   </div>
 </template>
 
-<script>
-import { mapActions } from 'vuex'
-import TheControlSidebar from './_components/TheControlSidebar'
-import TheMainContent from './_components/TheMainContent'
-import TheMainFooter from './_components/TheMainFooter'
-import TheNavbar from './_components/TheNavbar'
-import TheSidebar from './_components/TheSidebar'
+<script lang="ts">
+import TheBreadcrumb from './_components/TheBreadcrumb.vue'
+import TheNavbar from './_components/TheNavbar.vue'
+import TheSidebar from './_components/TheSidebar.vue'
+import { Vue, Component } from 'vue-property-decorator'
+import { namespace } from 'vuex-class'
 
-export default {
-  name: 'Dashboard',
-
+@Component({
   components: {
-    TheControlSidebar,
-    TheMainContent,
-    TheMainFooter,
+    TheBreadcrumb,
     TheNavbar,
     TheSidebar,
   },
+})
+export default class Dashboard extends Vue {
+  isSidebarOpen: boolean | null = null
+
+  @namespace('website/user').Action('getUserInfo') getUserInfo
+  @namespace('binary/modules').Action('getModules') getModules
 
   created () {
     this.getUserInfo()
     this.getModules()
-  },
-
-  mounted () {
-    this.$adminlte.init()
-  },
-
-  methods: {
-    ...mapActions('website/user', [
-      'getUserInfo',
-    ]),
-
-    ...mapActions('binary/modules', [
-      'getModules',
-    ]),
-  },
+  }
 }
 </script>
-
-<style lang="scss">
-.nav-link {
-  cursor: pointer;
-}
-</style>

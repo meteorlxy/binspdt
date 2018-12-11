@@ -1,12 +1,14 @@
 <template>
-  <main>
-    <RouterLink :to="{ name: 'dashboard' }">Dashboard</RouterLink>
-    <RouterLink :to="{ name: 'login' }">Login</RouterLink>
-  </main>
+  <div class="home">
+    <img
+      alt="Vue logo"
+      src="../assets/logo.png">
+  </div>
 </template>
 
-<script>
-export default {
-  name: 'Home',
-}
+<script lang="ts">
+import { Vue, Component } from 'vue-property-decorator'
+
+@Component
+export default class Home extends Vue {}
 </script>

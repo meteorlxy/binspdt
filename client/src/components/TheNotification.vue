@@ -1,30 +1,42 @@
 <template>
   <VueNotification
-    position="top right"
-    width="400">
-    <template slot="body" slot-scope="{ item: { title = '', type = 'info', text = ''}, close }">
-      <Alert
+    width="100%"
+    :style="style">
+    <template
+      slot="body"
+      slot-scope="{ item: { title = '', type = 'info', text = ''}, close }">
+      <VAlert
+        class="my-0"
         :type="type"
-        @close="close">
-        <template slot="title">
+        :value="true"
+        dismissible
+        transition="slide-y-transition"
+        @input="close">
+        <b>
           {{ title || type.charAt(0).toUpperCase() + type.slice(1) }}
-        </template>
+        </b>
 
-        <span slot="text" v-html="text" />
-      </Alert>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <span v-html="text"/>
+      </VAlert>
     </template>
   </VueNotification>
 </template>
 
-<script>
-import Alert from '@/components/admin-lte/Alert'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 
-export default {
-  name: 'TheNotification',
-
-  components: {
-    Alert,
-  },
+@Component
+export default class TheNotification extends Vue {
+  get style () {
+    if (this.$route === null) {
+      return ''
+    }
+    if (this.$route.name && this.$route.name.startsWith('dashboard')) {
+      return {
+        top: this.$vuetify.breakpoint.smAndDown ? '56px' : '64px',
+      }
+    }
+  }
 }
 </script>
-

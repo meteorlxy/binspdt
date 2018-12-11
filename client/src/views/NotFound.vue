@@ -1,37 +1,12 @@
 <template>
-  <ErrorPage>
-    <span
-      slot="code"
-      class="text-warning">
-      404
-    </span>
-
-    <h3>
-      <FaIcon
-        class="text-warning"
-        icon="exclamation-triangle" />
-
-      <span>Oops! Page not found.</span>
-    </h3>
-
-    <p>
-      We could not find the page you were looking for.
-    </p>
-
-    <p>
-      Click <RouterLink :to="{ name: 'home' }">here</RouterLink> return to the homepage.
-    </p>
-  </ErrorPage>
+  <div>
+    404 Not Found
+  </div>
 </template>
 
-<script>
-import ErrorPage from '@/components/admin-lte/ErrorPage'
+<script lang="ts">
+import { Vue, Component } from 'vue-property-decorator'
 
-export default {
-  name: 'NotFound',
-
-  components: {
-    ErrorPage,
-  },
-}
+@Component
+export default class NotFound extends Vue {}
 </script>

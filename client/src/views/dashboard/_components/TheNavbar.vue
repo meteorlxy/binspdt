@@ -1,72 +1,50 @@
 <template>
-  <Navbar>
-    <NavbarItemGroup>
-      <NavbarTogglerSidebar title="Toggle Sidebar" />
+  <VToolbar
+    app
+    clipped-left
+    dark>
+    <VToolbarSideIcon @click.stop="$emit('toggle-sidebar')"/>
 
-      <NavbarItem
-        class="d-none d-sm-inline-block"
-        to="/">
-        Home
-      </NavbarItem>
+    <VToolbarTitle>
+      BinSPDT
+    </VToolbarTitle>
 
-      <NavbarSearch />
-    </NavbarItemGroup>
+    <VSpacer/>
 
-    <NavbarItemGroup position="right">
-      <NavbarItem
-        title="logout"
-        @click.native="handleLogout">
-        <FaIcon icon="sign-out-alt" />
-      </NavbarItem>
-
-      <NavbarTogglerControlSidebar title="Toggle Control Sidebar" />
-    </NavbarItemGroup>
-  </Navbar>
+    <VBtn
+      icon
+      @click="handleLogout">
+      <VIcon>logout</VIcon>
+    </VBtn>
+  </VToolbar>
 </template>
 
-<script>
-import Navbar from '@/components/admin-lte/Navbar'
-import NavbarItem from '@/components/admin-lte/NavbarItem'
-import NavbarItemGroup from '@/components/admin-lte/NavbarItemGroup'
-import NavbarSearch from '@/components/admin-lte/NavbarSearch'
-import NavbarTogglerSidebar from '@/components/admin-lte/NavbarTogglerSidebar'
-import NavbarTogglerControlSidebar from '@/components/admin-lte/NavbarTogglerControlSidebar'
-import { mapActions } from 'vuex'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+import { namespace } from 'vuex-class'
 import { requestCatch } from '@/utils/catchError'
 
-export default {
-  name: 'TheNavbar',
+@Component
+export default class TheNavbar extends Vue {
+  drawer: any = null
 
-  components: {
-    Navbar,
-    NavbarItem,
-    NavbarItemGroup,
-    NavbarSearch,
-    NavbarTogglerSidebar,
-    NavbarTogglerControlSidebar,
-  },
+  @namespace('website/user').Action('logout') logout
 
-  methods: {
-    ...mapActions('website/user', [
-      'logout',
-    ]),
+  async handleLogout () {
+    try {
+      await this.logout()
 
-    async handleLogout () {
-      try {
-        await this.logout()
-
-        this.$router.push({
-          name: 'login',
-        }, () => {
-          this.$notify({
-            type: 'success',
-            text: 'Logout Successfully.',
-          })
+      this.$router.push({
+        name: 'login',
+      }, () => {
+        this.$notify({
+          type: 'success',
+          text: 'Logout Successfully.',
         })
-      } catch (error) {
-        requestCatch(error)
-      }
-    },
+      })
+    } catch (error) {
+      requestCatch(error)
+    }
   }
 }
 </script>
