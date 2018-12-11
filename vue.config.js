@@ -6,13 +6,15 @@ const pathResolve = (...args) => path.resolve(__dirname, ...args)
 module.exports = {
   outputDir: pathResolve('client/public'),
 
+  assetsDir: 'static',
+
   lintOnSave: process.env.NODE_ENV !== 'production',
 
   configureWebpack: {
     plugins: [
       new CopyWebpackPlugin([{
         from: pathResolve('client/src/assets/static'),
-        to: pathResolve('client/public'),
+        to: pathResolve('client/public/static'),
       }]),
     ],
   },
