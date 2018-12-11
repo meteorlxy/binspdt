@@ -1,0 +1,14 @@
+version: '2.4'
+
+services:
+  binspdt:
+    image: binspdt/binspdt:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  postgres:
+    image: binspdt/postgres:latest
+    build:
+      context: ./docker/postgres
+      dockerfile: Dockerfile

@@ -1,0 +1,5 @@
+*
+!docker/config/
+!server/
+!client/public/
+!requirements.txt

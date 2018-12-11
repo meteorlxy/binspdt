@@ -1,0 +1,54 @@
+version: '2.4'
+
+services:
+  binspdt:
+    container_name: binspdt
+    image: binspdt/binspdt:latest
+    restart: always
+    networks:
+      internal_network:
+    ports:
+      - 80:80
+    environment:
+      DEBUG: false
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB_WEBSITE: binspdt_website
+      POSTGRES_DB_BINARY: binspdt_binary
+      POSTGRES_USER: binspdt
+      POSTGRES_PASSWORD: binspdt@password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      REDIS_USER: 
+      REDIS_PASSWORD: 
+      IDA_68_PATH: E:\Program\IDA Pro\IDA Pro 6.8
+      IDA_695_PATH: E:\Program\IDA Pro\IDA Pro 6.95
+      IDA_70_PATH: E:\Program\IDA Pro\IDA Pro 7.0
+
+  postgres:
+    container_name: postgres
+    image: binspdt/postgres:latest
+    restart: always
+    hostname: postgres
+    networks:
+      internal_network:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      BINSPDT_USER: binspdt
+      BINSPDT_PASSWORD: binspdt@password
+      BINSPDT_DB_WEBSITE: binspdt_website
+      BINSPDT_DB_BINARY: binspdt_binary
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    restart: always
+    hostname: redis
+    networks:
+      internal_network:
+
+networks:
+  internal_network:
+    name: binspdt_network

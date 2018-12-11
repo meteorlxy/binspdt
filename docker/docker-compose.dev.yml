@@ -1,13 +1,9 @@
 version: '2.4'
 
 services:
-
   postgres:
     container_name: postgres
-    image: binspdt/postgres:alpine
-    build:
-      context: ./postgres
-      dockerfile: Dockerfile
+    image: binspdt/postgres:latest
     restart: always
     ports:
       - 5432:5432
@@ -16,6 +12,8 @@ services:
       POSTGRES_PASSWORD: postgres
       BINSPDT_USER: binspdt
       BINSPDT_PASSWORD: binspdt
+      BINSPDT_DB_WEBSITE: binspdt_website
+      BINSPDT_DB_BINARY: binspdt_binary
 
   redis:
     container_name: redis
