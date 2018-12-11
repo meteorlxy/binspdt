@@ -29,9 +29,9 @@ PUBLIC_DIR = os.path.join(BASE_DIR, '..', 'client', 'public')
 SECRET_KEY = 'q8#%f6(8_cf_!p^zqt$-s0*+)ia4^8#f#_j*c+kbxp0*8#3^@m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', False)
+DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
 # Postgres config
 
