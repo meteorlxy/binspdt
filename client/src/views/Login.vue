@@ -123,7 +123,7 @@ export default class Login extends Vue {
       requestCatch(error, (res) => {
         if (res.status === 401) {
           this.$notify({
-            type: 'danger',
+            type: 'error',
             title: 'Login Failed',
             text: 'Incorrect username or password.',
           })
