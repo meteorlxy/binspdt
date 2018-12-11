@@ -5,7 +5,9 @@
         {{ pageTitle }}
       </template>
 
-      <TheBreadcrumb slot="right" />
+      <TheBreadcrumb
+        slot="right"
+        class="mt-3 mt-sm-2"/>
     </ContentHeader>
 
     <ContentMain>

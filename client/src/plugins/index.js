@@ -1,4 +1,5 @@
 import './admin-lte'
+import './helpers'
 import './vee-validate'
 import './vue-font-awesome'
 import './vue-notification'

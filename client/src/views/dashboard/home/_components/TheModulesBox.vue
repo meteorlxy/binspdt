@@ -14,7 +14,7 @@
         spin />
 
       <span v-show="!isLoading">
-        {{ modules.length }}
+        {{ modules.count }}
       </span>
     </template>
   </BoxInfo>

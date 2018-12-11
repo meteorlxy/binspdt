@@ -6,7 +6,7 @@ from .views import modules
 
 urlpatterns = [
   # Modules index
-  path('modules', modules.Modules.as_view({ 'get': 'index' }), name='modules.index'),
+  path('modules', modules.Modules.as_view({ 'get': 'index', 'delete': 'delete_many' }), name='modules.index'),
   # Modules count
   path('modules/count', modules.Modules.as_view({ 'get': 'count' }), name='modules.count'),
   # Module details and delete

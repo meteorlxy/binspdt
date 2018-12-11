@@ -33,8 +33,8 @@ export const getModulesCount = ({
 }
 
 export const getModule = ({
-  id,
   token,
+  id,
 }) => {
   return axios.request({
     url: `/api/v1/binary/modules/count/${id}`,
@@ -46,8 +46,8 @@ export const getModule = ({
 }
 
 export const deleteModule = ({
-  id,
   token,
+  id,
 }) => {
   return axios.request({
     url: `/api/v1/binary/modules/count/${id}`,
@@ -58,9 +58,30 @@ export const deleteModule = ({
   })
 }
 
+export const postModules = ({
+  token,
+  version = '6.8',
+  files,
+}) => {
+  const formData = new FormData()
+  for(const [index, file] of files.entries){
+    formData.append(`files[${index}]`, file)
+  }
+  return axios.request({
+    url: `/api/v1/binary/modules/v/${version}`,
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': `Token ${token}`,
+    },
+    data: formData,
+  })
+}
+
 export default {
   getModules,
   getModulesCount,
   getModule,
   deleteModule,
+  postModules,
 }

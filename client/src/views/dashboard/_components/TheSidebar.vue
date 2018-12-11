@@ -41,13 +41,21 @@
     </SidebarItem>
 
     <SidebarItemTree
-      :icon="['far', 'circle']">
+      icon="cubes">
       <template slot="title">
-        Tree
+        Modules
       </template>
       
-      <SidebarItem>
-        Dashboard
+      <SidebarItem
+        :to="{ name: 'dashboard.modules' }"
+        icon="list-ul">
+        List
+      </SidebarItem>
+      
+      <SidebarItem
+        :to="{ name: 'dashboard.modules' }"
+        icon="upload">
+        Upload
       </SidebarItem>
     </SidebarItemTree>
   </Sidebar>

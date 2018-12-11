@@ -1,12 +1,21 @@
 import {
   getModules,
+  getModule,
+  deleteModule,
+  postModules,
 } from '@/api/binary/modules'
 
 export default {
   namespaced: true,
 
   state: {
-    modules: [],
+    modules: {
+      count: 0,
+      page: 1,
+      perPage: 25,
+      data: [],
+    },
+    isLoading: false,
   },
 
   mutations: {
@@ -17,26 +26,6 @@ export default {
     setModules (state, data) {
       state.modules = data
     },
-
-    setModuleDetails (state, { id, details }) {
-      state.modules_details.set(id, details)
-    },
-
-    addLoadingDetails (state, id) {
-      state.modules_isLoading_details.push(id)
-    },
-
-    removeLoadingDetails (state, id) {
-      state.modules_isLoading_details.splice(state.modules_isLoading_details.indexOf(id), 1)
-    },
-
-    addDeleting (state, id) {
-      state.modules_isDeleting.push(id)
-    },
-
-    removeDeleting (state, id) {
-      state.modules_isDeleting.splice(state.modules_isDeleting.indexOf(id), 1)
-    }
   },
 
   actions: {
@@ -51,27 +40,72 @@ export default {
           ...params,
           token: rootState.token,
         })
-        const modules = response.data.data
+        const modules = response.data
         commit('setModules', modules)
         return modules
       } catch (e) {
-
+        throw e
       } finally {
         commit('setLoading', false)
       }
     },
 
-    async deleteModule ({ state, commit, rootState }) {
+    async getModule ({ state, commit, rootState }, id) {
       if (state.isLoading) {
         return false
       }
 
       try {
         commit('setLoading', true)
-        const response = await getModules({ token: rootState.token })
+        const response = await getModule({
+          token: rootState.token,
+          id,
+        })
         return response
       } catch (e) {
+        throw e
+      } finally {
+        commit('setLoading', false)
+      }
+    },
 
+    async deleteModule ({ state, commit, rootState }, id) {
+      if (state.isLoading) {
+        return false
+      }
+
+      try {
+        commit('setLoading', true)
+        const response = await deleteModule({
+          token: rootState.token,
+          id,
+        })
+        return response
+      } catch (e) {
+        throw e
+      } finally {
+        commit('setLoading', false)
+      }
+    },
+
+    async postModules ({ state, commit, rootState }, {
+      version,
+      files,
+    }) {
+      if (state.isLoading) {
+        return false
+      }
+
+      try {
+        commit('setLoading', true)
+        const response = await postModules({
+          token: rootState.token,
+          version,
+          files,
+        })
+        return response
+      } catch (e) {
+        throw e
       } finally {
         commit('setLoading', false)
       }

@@ -43,17 +43,33 @@ export default [
         component: () => import('@/views/dashboard/home/Home'),
         meta: {
           title: 'Dashboard',
-          linkText: 'Home',
         },
       },
       {
         path: 'modules',
-        name: 'dashboard.modules',
         component: () => import('@/views/dashboard/modules/Modules'),
         meta: {
-          title: 'Modules',
           linkText: 'Modules',
         },
+        children: [
+          {
+            path: '',
+            name: 'dashboard.modules',
+            component: () => import('@/views/dashboard/modules/Index'),
+            meta: {
+              title: 'Modules',
+            },
+          },
+          {
+            path: 'modules',
+            name: 'dashboard.modules.upload',
+            component: () => import('@/views/dashboard/modules/Upload'),
+            meta: {
+              title: 'Modules',
+              linkText: 'Upload',
+            },
+          },
+        ],
       },
     ],
   },

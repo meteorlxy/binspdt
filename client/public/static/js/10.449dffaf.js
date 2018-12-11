@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[10],{199:function(e,s,t){"use strict";t.r(s);var n={name:"DashboardModules"},o=t(4),l=Object(o.a)(n,function(){var e=this.$createElement,s=this._self._c||e;return s("div",{staticClass:"row"},[s("RouterView")],1)},[],!1,null,null,null);l.options.__file="Modules.vue";s.default=l.exports}}]);

@@ -1,11 +1,12 @@
 <template>
-  <div class="row">
-    <RouterView/>
+  <div class="card-footer">
+    <slot/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'DashboardModules',
+  name: 'CardFooter',
 }
 </script>
+
