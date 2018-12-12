@@ -26,12 +26,16 @@ import Vuetify, {
   VProgressLinear,
   VMenu,
   VNavigationDrawer,
+  VRadio,
+  VRadioGroup,
+  VSelect,
   VSlideYReverseTransition,
   VSpacer,
   VTextField,
   VToolbar,
   VToolbarSideIcon,
   VToolbarTitle,
+  VTooltip,
 } from 'vuetify/lib'
 import 'vuetify/src/stylus/app.styl'
 
@@ -65,11 +69,15 @@ Vue.use(Vuetify, {
     VProgressLinear,
     VMenu,
     VNavigationDrawer,
+    VRadio,
+    VRadioGroup,
+    VSelect,
     VSlideYReverseTransition,
     VSpacer,
     VTextField,
     VToolbar,
     VToolbarSideIcon,
     VToolbarTitle,
+    VTooltip,
   },
 })

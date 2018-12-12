@@ -1,112 +1,173 @@
 <template>
-  <main>
-    <div class="elevation-1">
-      <VToolbar
-        flat
-        color="white">
-        <VBtn
-          color="grey"
-          title="Back To Modules List"
-          :to="{ name: 'dashboard.modules' }"
-          exact
-          icon
-          flat
-          :disabled="hasPending">
-          <VIcon>arrow_back</VIcon>
-        </VBtn>
-
-        <VSpacer/>
-
-        <VBtn
-          color="grey"
-          title="Reset"
-          flat
-          icon
-          :disabled="hasPending"
-          @click="files = []">
-          <VIcon>refresh</VIcon>
-        </VBtn>
-
-        <VBtn
-          color="success"
-          title="Start Upload"
-          :icon="$vuetify.breakpoint.smAndDown"
-          :loading="hasPending"
-          :disabled="!hasPending && !hasUnstarted"
-          @click="handlePostModules">
-          <VIcon :left="!$vuetify.breakpoint.smAndDown">
-            check
-          </VIcon>
-
-          <span class="hidden-sm-and-down">
-            Start Upload
-          </span>
-        </VBtn>
-
-        <VBtn
-          color="primary"
-          title="Add Files"
-          :icon="$vuetify.breakpoint.smAndDown"
-          :disabled="hasPending"
-          @click="$refs.files.click()">
-          <VIcon :left="!$vuetify.breakpoint.smAndDown">
-            note_add
-          </VIcon>
-
-          <span class="hidden-sm-and-down">
-            Add Files
-          </span>
-        </VBtn>
-
-        <input
-          v-show="false"
-          ref="files"
-          type="file"
-          accept=".idb,.i64"
-          multiple
-          @change="addFiles">
-      </VToolbar>
-
-      <VDataTable
-        :headers="tableHeaders"
-        :items="tableItems"
-        hide-actions>
-        <template
-          slot="items"
-          slot-scope="props">
-          <td>{{ props.index }}</td>
-
-          <td>{{ props.item.file.name }}</td>
-
-          <td>{{ $helpers.filesize(props.item.file.size) }}</td>
-
-          <td>
-            <VProgressLinear
-              :color="getFileStatus(props.item).color"
-              :value="props.item.percentage"/>
-          </td>
-
-          <td>
-            <span :class="`${getFileStatus(props.item).color}--text`">
-              {{ getFileStatus(props.item).text }}
-            </span>
-          </td>
-
-          <td>
+  <VLayout
+    row
+    wrap>
+    <VFlex xs12>
+      <VCard>
+        <VLayout
+          class="pt-2 px-3"
+          row
+          wrap>
+          <VFlex xs6>
             <VBtn
-              class="ml-0"
-              :title="props.item.status === 2 ? 'Finish' : 'Remove this file'"
+              color="grey"
+              title="Back To Modules List"
+              :to="{ name: 'dashboard.modules' }"
+              exact
               icon
-              small
-              :disabled="props.item.status === 1"
-              @click="removeFile(props.index)">
-              <VIcon>{{ props.item.status === 2 ? 'check' : 'close' }}</VIcon>
+              flat
+              :disabled="hasPending">
+              <VIcon>arrow_back</VIcon>
             </VBtn>
-          </td>
-        </template>
-      </VDataTable>
-    </div>
-  </main>
+
+            <VBtn
+              color="grey"
+              title="Reset"
+              flat
+              icon
+              :disabled="hasPending"
+              @click="files = []">
+              <VIcon>refresh</VIcon>
+            </VBtn>
+          </VFlex>
+
+          <VFlex
+            class="text-xs-right"
+            xs6>
+            <VBtn
+              color="success"
+              title="Start Upload"
+              :icon="$vuetify.breakpoint.smAndDown"
+              :loading="hasPending"
+              :disabled="!hasPending && !hasUnstarted"
+              @click="handlePostModules">
+              <VIcon :left="!$vuetify.breakpoint.smAndDown">
+                check
+              </VIcon>
+
+              <span class="hidden-sm-and-down">
+                Start Upload
+              </span>
+            </VBtn>
+
+            <VBtn
+              color="primary"
+              title="Add Files"
+              :icon="$vuetify.breakpoint.smAndDown"
+              :disabled="hasPending"
+              @click="$refs.files.click()">
+              <VIcon :left="!$vuetify.breakpoint.smAndDown">
+                note_add
+              </VIcon>
+
+              <span class="hidden-sm-and-down">
+                Add Files
+              </span>
+            </VBtn>
+
+            <input
+              v-show="false"
+              ref="files"
+              type="file"
+              :accept="filesAccept"
+              multiple
+              @change="addFiles">
+          </VFlex>
+
+          <VFlex
+            xs12
+            md6>
+            <VSelect
+              v-model="idaVersion"
+              class="mx-2 d-inline-block"
+              label="IDA Pro Version"
+              :items="idaVersionItems"/>
+
+            <VTooltip
+              v-show="!isBinaryFiles"
+              top>
+              <VIcon
+                slot="activator"
+                style="cursor: pointer">
+                help_outline
+              </VIcon>
+
+              <span>Make sure to select the corresponding IDA Pro version of the .idb/.i64 files</span>
+            </VTooltip>
+          </VFlex>
+
+          <VFlex
+            class="text-md-right"
+            xs12
+            md6>
+            <VRadioGroup
+              v-model="isBinaryFiles"
+              class="d-inline-block"
+              row>
+              <VRadio
+                label="binary file"
+                :value="true"
+                disabled/>
+              <VRadio
+                label=".idb/.i64 file"
+                :value="false"/>
+            </VRadioGroup>
+          </VFlex>
+        </VLayout>
+
+        <VDataTable
+          :headers="tableHeaders"
+          :items="tableItems"
+          hide-actions>
+          <template slot="no-data">
+            <div class="text-xs-center">
+              <VBtn
+                flat
+                title="Add Files"
+                :disabled="hasPending"
+                @click="$refs.files.click()">
+                Add files to upload
+              </VBtn>
+            </div>
+          </template>
+
+          <template
+            slot="items"
+            slot-scope="props">
+            <td>{{ props.index }}</td>
+
+            <td>{{ props.item.file.name }}</td>
+
+            <td>{{ $helpers.filesize(props.item.file.size) }}</td>
+
+            <td>
+              <VProgressLinear
+                :color="getFileStatus(props.item).color"
+                :value="props.item.percentage"/>
+            </td>
+
+            <td>
+              <span :class="`${getFileStatus(props.item).color}--text`">
+                {{ getFileStatus(props.item).text }}
+              </span>
+            </td>
+
+            <td>
+              <VBtn
+                class="ml-0"
+                :title="props.item.status === 2 ? 'Finish' : 'Remove this file'"
+                icon
+                small
+                :disabled="props.item.status === 1"
+                @click="removeFile(props.index)">
+                <VIcon>{{ props.item.status === 2 ? 'check' : 'close' }}</VIcon>
+              </VBtn>
+            </td>
+          </template>
+        </VDataTable>
+      </VCard>
+    </VFlex>
+  </VLayout>
 </template>
 
 <script lang="ts">
@@ -121,6 +182,20 @@ export default class ModulesUpload extends Vue {
   @namespace('binary/modules').Action('postModules') postModules
 
   files: Array<UploadFile> = []
+
+  isBinaryFiles: Boolean = false
+
+  idaVersion: String = '6.8'
+
+  get idaVersionItems () {
+    return [
+      '6.8',
+    ]
+  }
+
+  get filesAccept () {
+    return this.isBinaryFiles ? '*' : '.idb,.i64'
+  }
 
   get tableHeaders () {
     return [
@@ -158,12 +233,20 @@ export default class ModulesUpload extends Vue {
   addFiles (this: any) {
     const newFilesArr: Array<File> = Array.from(this.$refs.files.files)
     for (const newFile of newFilesArr) {
+      // Check if the new file has already in the files list
       if (!this.files.find(item => {
         return item.file.name === newFile.name &&
           item.file.size === newFile.size &&
           item.file.lastModified === newFile.lastModified
       })
       ) {
+        // If choose to upload .idb/.i64 files, check the file extension
+        const newFileExt = newFile.name.split('.').pop() || ''
+        if (!this.isBinaryFiles && !['idb', 'i64'].includes(newFileExt)) {
+          continue
+        }
+
+        // Push the new file into the files list
         this.files.push({
           status: 0,
           percentage: 0,
@@ -171,6 +254,8 @@ export default class ModulesUpload extends Vue {
         })
       }
     }
+
+    // Reset the files in the <input> DOM
     this.$refs.files.value = ''
   }
 
@@ -229,7 +314,7 @@ export default class ModulesUpload extends Vue {
         // Create the post file promise
         const postPromise = this.postModules({
           files: [file.file],
-          version: '6.8',
+          version: this.idaVersion,
           onUploadProgress: (progress) => {
             // Watch the upload progress
             file.percentage = Math.floor((progress.loaded * 100) / progress.total)
