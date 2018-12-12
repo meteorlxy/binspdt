@@ -25,7 +25,7 @@
 
       <VListTile
         :to="{ name: 'dashboard' }"
-        exact>
+        :exact="true">
         <VListTileAction>
           <VIcon>dashboard</VIcon>
         </VListTileAction>
@@ -37,7 +37,7 @@
 
       <VListTile
         :to="{ name: 'dashboard.modules' }"
-        exact>
+        :exact="false">
         <VListTileAction>
           <VIcon>developer_board</VIcon>
         </VListTileAction>
@@ -46,6 +46,38 @@
           <VListTileTitle>Modules</VListTileTitle>
         </VListTileContent>
       </VListTile>
+
+      <VListTile
+        :to="{ name: 'dashboard.analysis' }"
+        :exact="false">
+        <VListTileAction>
+          <VIcon>timeline</VIcon>
+        </VListTileAction>
+
+        <VListTileContent>
+          <VListTileTitle>Analysis</VListTileTitle>
+        </VListTileContent>
+      </VListTile>
+
+      <VListGroup no-action>
+        <VListTile slot="activator">
+          <VListTileAction>
+            <VIcon>local_library</VIcon>
+          </VListTileAction>
+
+          <VListTileContent>
+            <VListTileTitle>Wiki</VListTileTitle>
+          </VListTileContent>
+        </VListTile>
+
+        <VListTile
+          :to="{ name: 'dashboard.wiki' }"
+          :exact="true">
+          <VListTileContent>
+            <VListTileTitle>Wiki Index</VListTileTitle>
+          </VListTileContent>
+        </VListTile>
+      </VListGroup>
     </VList>
   </VNavigationDrawer>
 </template>
