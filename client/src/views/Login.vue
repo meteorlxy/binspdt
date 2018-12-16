@@ -31,7 +31,8 @@
                   name="username"
                   label="Username"
                   prepend-icon="person"
-                  :error-messages="errors.collect('username')"/>
+                  :error-messages="errors.collect('username')"
+                  @keyup.enter="handleLogin"/>
 
                 <VTextField
                   v-model="loginForm.password"
@@ -42,7 +43,8 @@
                   prepend-icon="lock"
                   :append-icon="showPassword ? 'visibility_off' : 'visibility'"
                   :error-messages="errors.collect('password')"
-                  @click:append="showPassword = !showPassword"/>
+                  @click:append="showPassword = !showPassword"
+                  @keyup.enter="handleLogin"/>
               </VForm>
             </VCardText>
 

@@ -134,18 +134,14 @@ export default class Login extends Vue {
       this.isLoading = true
       const response = await this.register(this.registerForm)
 
-      if (response.status === 201) {
-        this.$router.push({
-          name: 'login',
-        }, () => {
-          this.$notify({
-            type: 'success',
-            text: 'Congratulations! You have already registered a new account. Now you can use it to login BinSPDT.',
-          })
+      this.$router.push({
+        name: 'login',
+      }, () => {
+        this.$notify({
+          type: 'success',
+          text: 'Congratulations! You have already registered a new account. Now you can use it to login BinSPDT.',
         })
-      } else {
-        throw new Error(`${response.status} ${response.statusText}: ${response.data.message}`)
-      }
+      })
     } catch (error) {
       requestCatch(error, (res) => {
         if (res.status === 422 && res.data.errors.hasOwnProperty('username')) {

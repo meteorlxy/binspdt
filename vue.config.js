@@ -8,7 +8,7 @@ module.exports = {
 
   assetsDir: 'static',
 
-  lintOnSave: process.env.NODE_ENV !== 'production',
+  lintOnSave: process.env.NODE_ENV === 'development',
 
   configureWebpack: {
     plugins: [
@@ -30,7 +30,7 @@ module.exports = {
         return args
       })
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV === 'development') {
       config.module
         .rule('eslint')
         .use('eslint-loader')

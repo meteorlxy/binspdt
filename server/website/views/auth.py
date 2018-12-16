@@ -4,7 +4,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
-from website.serializers.auth import RegisterSerializer, LoginSerializer
+from website.serializers import RegisterSerializer, LoginSerializer
 
 class Auth(ViewSet):
   """

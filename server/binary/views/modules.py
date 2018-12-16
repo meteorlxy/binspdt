@@ -9,9 +9,9 @@ from rest_framework import status
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 
-from binary.models import Module, ModuleObject, ModuleResult
-from binary.serializers.module import ModuleSerializer
-from binary.utils import analysis, db
+from binary.models import Module, ModuleObject, ModuleAnalysis
+from binary.serializers import ModuleSerializer
+from binary.utils import db
 
 class Modules(ViewSet):
   """
@@ -23,38 +23,46 @@ class Modules(ViewSet):
     """
     # get fields of modules
     module_fields = tuple(field.name for field in Module._meta.get_fields())
-    qeuryset = Module.objects.all()
+    queryset = Module.objects.all()
 
     # get pagination params from query
     params = {
+      'paginate': request.GET.get('_paginate', 'true').lower(),
       'page': request.GET.get('_page', 1),
       'per_page': request.GET.get('_per_page', 25),
-      'order_by': request.GET.get('_order_by', 'id'),
+      'order_by': request.GET.get('_order_by', '-id'),
       'search': request.GET.get('_search', ''),
     }
 
-    if params['order_by'] not in module_fields:
-      params['order_by'] = 'id'
-
     if params['search'] != '':
-      qeuryset = qeuryset.filter(
+      queryset = queryset.filter(
         Q(name__contains = params['search'])
         | Q(architecture__contains = params['search'])
         | Q(md5__contains = params['search'])
         | Q(import_time__contains = params['search'])
       )
 
-    qeuryset = qeuryset.order_by(params['order_by'])
-    paginator = Paginator(qeuryset, params['per_page'])
-    page = paginator.get_page(params['page'])
-    data = ModuleSerializer(page.object_list, many=True).data
+    if params['order_by'] not in module_fields:
+      params['order_by'] = '-id'
 
-    return Response({
-      'page': page.number,
-      'page_count': paginator.num_pages,
-      'data': data,
-      'count': paginator.count,
-    })
+    queryset = queryset.order_by(params['order_by'])
+
+    if params['paginate'] != 'false':
+      paginator = Paginator(queryset, params['per_page'])
+      page = paginator.get_page(params['page'])
+      data = ModuleSerializer(page.object_list, many=True).data
+
+      return Response({
+        'page': page.number,
+        'page_count': paginator.num_pages,
+        'data': data,
+        'count': paginator.count,
+      })
+    else:
+      data = ModuleSerializer(queryset, many=True).data
+      return Response({
+        'data': data,
+      })
 
   def count(self, request, format='json'):
     """
@@ -66,23 +74,28 @@ class Modules(ViewSet):
 
   def details(self, request, module_id, format='json'):
     """
-    Get module detail
+    Get module details
     """
+    queryset = Module.objects.get(id=module_id)
+    data = ModuleSerializer(queryset).data
+    data['details'] = db.get_module_details(module_id)
+  
     return Response({
-      'data': db.get_module_details(module_id),
+      'data': data,
     })
+  
+  def _delete_one_module(self, module_id):
+    # Delete all analyses related to this module
+    ModuleAnalysis.objects.filter(Q(module_1_id=module_id) | Q(module_2_id=module_id)).delete()
+    # Delete the module itself
+    db.delete_module(module_id)
 
   def delete(self, request, module_id, format='json'):
     """
     Delete one module
     """
     try:
-      # Delete all related analysis results
-      results = ModuleResult.objects.filter(Q(module_1_id=module_id) | Q(module_2_id=module_id))
-      for result in results:
-        analysis.delete(result.path)
-      # Delete the module itself
-      db.delete_module(module_id)
+      self._delete_one_module(module_id=module_id)
       return Response({
         'msg': 'deleted module successfully',
         'data': {
@@ -101,12 +114,7 @@ class Modules(ViewSet):
     modules = request.data['modules']
     try:
       for module_id in modules:
-        # Delete all related analysis results
-        results = ModuleResult.objects.filter(Q(module_1_id=module_id) | Q(module_2_id=module_id))
-        for result in results:
-          analysis.delete(result.path)
-        # Delete the module itself
-        db.delete_module(module_id)
+        self._delete_one_module(module_id=module_id)
       return Response({
         'msg': 'deleted modules successfully',
         'data': {
@@ -117,7 +125,7 @@ class Modules(ViewSet):
       return Response({
         'msg': 'failed to delete modules',
         'data': {
-          'module_id': modules
+          'modules': modules
         }
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
@@ -146,3 +154,21 @@ class Modules(ViewSet):
       return Response({
         'msg': 'failed to create module',
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+  def module_functions(self, request, module_id, format='json'):
+    """
+    Get module functions
+    """
+    return Response({
+      'data': db.get_module_functions(module_id=module_id),
+    })
+
+  def function_basic_blocks(self, request, module_id, function_address, format='json'):
+    return Response({
+      'data': db.get_function_basic_blocks(module_id=module_id, function_address=function_address),
+    })
+
+  def basic_block_instructions(self, request, module_id, function_address, basic_block_id, format='json'):
+    return Response({
+      'data': db.get_basic_block_instructions(module_id=module_id, function_address=function_address, basic_block_id=basic_block_id),
+    })

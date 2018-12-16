@@ -78,35 +78,59 @@ export default [
               linkText: 'Upload',
             },
           },
+
+          // Dashboard Modules Details
+          {
+            path: ':id',
+            name: 'dashboard.modules.details',
+            component: () => import('@/views/dashboard/modules/ModulesDetails.vue'),
+            props: route => ({ id: Number(route.params.id) }),
+            meta: {
+              title: 'Modules Details',
+              linkText: 'Details',
+            },
+          },
         ],
       },
 
-      // Dashboard Analysis
+      // Dashboard Analyses
       {
-        path: 'analysis',
-        component: () => import('@/views/dashboard/analysis/Analysis.vue'),
+        path: 'analyses',
+        component: () => import('@/views/dashboard/analyses/Analyses.vue'),
         meta: {
-          linkText: 'Analysis',
+          linkText: 'Analyses',
         },
         children: [
-          // Dashboard Analysis Index
+          // Dashboard Analyses Index
           {
             path: '',
-            name: 'dashboard.analysis',
-            component: () => import('@/views/dashboard/analysis/AnalysisIndex.vue'),
+            name: 'dashboard.analyses',
+            component: () => import('@/views/dashboard/analyses/AnalysesIndex.vue'),
             meta: {
-              title: 'Analysis',
+              title: 'Analyses',
             },
           },
 
-          // Dashboard Analysis Results
+          // Dashboard Analyses New
           {
             path: 'new',
-            name: 'dashboard.analysis.new',
-            component: () => import('@/views/dashboard/analysis/AnalysisNew.vue'),
+            name: 'dashboard.analyses.new',
+            component: () => import('@/views/dashboard/analyses/AnalysesNew.vue'),
             meta: {
               title: 'New Analysis',
               linkText: 'New',
+            },
+          },
+
+          // Dashboard Analyses Details
+          {
+            path: ':id',
+            name: 'dashboard.analyses.details',
+            component: () => import('@/views/dashboard/analyses/AnalysesDetails.vue'),
+            props: route => ({ id: Number(route.params.id) }),
+            meta: {
+              title: 'Analysis Details',
+              linkText: 'Details',
             },
           },
         ],
@@ -127,6 +151,17 @@ export default [
             component: () => import('@/views/dashboard/wiki/WikiIndex.vue'),
             meta: {
               title: 'Wiki',
+            },
+          },
+
+          // Dashboard Wiki API Set
+          {
+            path: 'api-set',
+            name: 'dashboard.wiki.api-set',
+            component: () => import('@/views/dashboard/wiki/WikiAPISet.vue'),
+            meta: {
+              title: 'API Set',
+              linkText: 'API Set',
             },
           },
         ],

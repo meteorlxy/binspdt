@@ -4,6 +4,9 @@ import {
   deleteModule,
   deleteModules,
   postModules,
+  getModuleFunctions,
+  getFunctionBasicBlocks,
+  getBasicBlockInstructions,
 } from '@/api/binary/modules'
 
 export default {
@@ -52,13 +55,8 @@ export default {
       }
     },
 
-    async getModule ({ state, commit, rootState }, { id }) {
-      if (state.isLoading) {
-        return false
-      }
-
+    async getModule ({ rootState }, { id }) {
       try {
-        commit('setLoading', true)
         const response = await getModule({
           token: rootState.token,
           id,
@@ -66,8 +64,6 @@ export default {
         return response
       } catch (e) {
         throw e
-      } finally {
-        commit('setLoading', false)
       }
     },
 
@@ -120,6 +116,54 @@ export default {
           files,
           version,
           onUploadProgress,
+        })
+        return response
+      } catch (e) {
+        throw e
+      }
+    },
+
+    async getModuleFunctions ({ rootState }, {
+      moduleId,
+    }) {
+      try {
+        const response = await getModuleFunctions({
+          token: rootState.token,
+          moduleId,
+        })
+        return response
+      } catch (e) {
+        throw e
+      }
+    },
+
+    async getFunctionBasicBlocks ({ rootState }, {
+      moduleId,
+      functionAddress,
+    }) {
+      try {
+        const response = await getFunctionBasicBlocks({
+          token: rootState.token,
+          moduleId,
+          functionAddress,
+        })
+        return response
+      } catch (e) {
+        throw e
+      }
+    },
+
+    async getBasicBlockInstructions ({ rootState }, {
+      moduleId,
+      functionAddress,
+      basicBlockId,
+    }) {
+      try {
+        const response = await getBasicBlockInstructions({
+          token: rootState.token,
+          moduleId,
+          functionAddress,
+          basicBlockId,
         })
         return response
       } catch (e) {

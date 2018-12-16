@@ -2,9 +2,10 @@
   <VBreadcrumbs :items="items">
     <template
       slot="item"
-      slot-scope="{ item: { text, href } }">
+      slot-scope="{ item: { text, href, disabled } }">
       <VBreadcrumbsItem
         :to="href"
+        :disabled="disabled"
         exact>
         {{ text }}
       </VBreadcrumbsItem>
@@ -18,10 +19,12 @@ import { Component, Vue } from 'vue-property-decorator'
 @Component
 export default class TheBreadcrumb extends Vue {
   get items () {
-    return this.$route.matched.filter(item => item.meta.linkText).map((item, index) => {
+    const matchedRoutes = this.$route.matched.filter(item => item.meta.linkText)
+    return matchedRoutes.map((item, index) => {
       return {
         text: item.meta.linkText,
         href: item.path,
+        disabled: index === matchedRoutes.length - 1,
       }
     })
   }

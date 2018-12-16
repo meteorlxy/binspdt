@@ -1,12 +1,12 @@
 import modules from './modules'
-// import results from './results'
+import analyses from './analyses'
 
 const binary = {
   namespaced: true,
 
   modules: {
     modules,
-    // results
+    analyses,
   },
 }
 

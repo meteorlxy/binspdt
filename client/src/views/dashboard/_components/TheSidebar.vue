@@ -48,14 +48,14 @@
       </VListTile>
 
       <VListTile
-        :to="{ name: 'dashboard.analysis' }"
+        :to="{ name: 'dashboard.analyses' }"
         :exact="false">
         <VListTileAction>
           <VIcon>timeline</VIcon>
         </VListTileAction>
 
         <VListTileContent>
-          <VListTileTitle>Analysis</VListTileTitle>
+          <VListTileTitle>Analyses</VListTileTitle>
         </VListTileContent>
       </VListTile>
 
@@ -75,6 +75,14 @@
           :exact="true">
           <VListTileContent>
             <VListTileTitle>Wiki Index</VListTileTitle>
+          </VListTileContent>
+        </VListTile>
+
+        <VListTile
+          :to="{ name: 'dashboard.wiki.api-set' }"
+          :exact="true">
+          <VListTileContent>
+            <VListTileTitle>API Set</VListTileTitle>
           </VListTileContent>
         </VListTile>
       </VListGroup>

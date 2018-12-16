@@ -1,173 +1,167 @@
 <template>
-  <VLayout
-    row
-    wrap>
-    <VFlex xs12>
-      <VCard>
-        <VLayout
-          class="pt-2 px-3"
-          row
-          wrap>
-          <VFlex xs6>
-            <VBtn
-              color="grey"
-              title="Back To Modules List"
-              :to="{ name: 'dashboard.modules' }"
-              exact
-              icon
-              flat
-              :disabled="hasPending">
-              <VIcon>arrow_back</VIcon>
-            </VBtn>
+  <VCard>
+    <VLayout
+      class="py-2 px-3"
+      row
+      wrap>
+      <VFlex xs6>
+        <VBtn
+          color="grey"
+          title="Back To Modules List"
+          :to="{ name: 'dashboard.modules' }"
+          exact
+          icon
+          flat
+          :disabled="hasPending">
+          <VIcon>arrow_back</VIcon>
+        </VBtn>
 
-            <VBtn
-              color="grey"
-              title="Reset"
-              flat
-              icon
-              :disabled="hasPending"
-              @click="files = []">
-              <VIcon>refresh</VIcon>
-            </VBtn>
-          </VFlex>
+        <VBtn
+          color="grey"
+          title="Reset"
+          flat
+          icon
+          :disabled="hasPending"
+          @click="files = []">
+          <VIcon>refresh</VIcon>
+        </VBtn>
+      </VFlex>
 
-          <VFlex
-            class="text-xs-right"
-            xs6>
-            <VBtn
-              color="success"
-              title="Start Upload"
-              :icon="$vuetify.breakpoint.smAndDown"
-              :loading="hasPending"
-              :disabled="!hasPending && !hasUnstarted"
-              @click="handlePostModules">
-              <VIcon :left="!$vuetify.breakpoint.smAndDown">
-                check
-              </VIcon>
+      <VFlex
+        class="text-xs-right"
+        xs6>
+        <VBtn
+          color="success"
+          title="Start Upload"
+          :icon="$vuetify.breakpoint.smAndDown"
+          :loading="hasPending"
+          :disabled="!hasPending && !hasUnstarted"
+          @click="handlePostModules">
+          <VIcon :left="!$vuetify.breakpoint.smAndDown">
+            check
+          </VIcon>
 
-              <span class="hidden-sm-and-down">
-                Start Upload
-              </span>
-            </VBtn>
+          <span class="hidden-sm-and-down">
+            Start Upload
+          </span>
+        </VBtn>
 
-            <VBtn
-              color="primary"
-              title="Add Files"
-              :icon="$vuetify.breakpoint.smAndDown"
-              :disabled="hasPending"
-              @click="$refs.files.click()">
-              <VIcon :left="!$vuetify.breakpoint.smAndDown">
-                note_add
-              </VIcon>
+        <VBtn
+          color="primary"
+          title="Add Files"
+          :icon="$vuetify.breakpoint.smAndDown"
+          :disabled="hasPending"
+          @click="$refs.files.click()">
+          <VIcon :left="!$vuetify.breakpoint.smAndDown">
+            note_add
+          </VIcon>
 
-              <span class="hidden-sm-and-down">
-                Add Files
-              </span>
-            </VBtn>
+          <span class="hidden-sm-and-down">
+            Add Files
+          </span>
+        </VBtn>
 
-            <input
-              v-show="false"
-              ref="files"
-              type="file"
-              :accept="filesAccept"
-              multiple
-              @change="addFiles">
-          </VFlex>
+        <input
+          v-show="false"
+          ref="files"
+          type="file"
+          :accept="filesAccept"
+          multiple
+          @change="addFiles">
+      </VFlex>
 
-          <VFlex
-            xs12
-            md6>
-            <VSelect
-              v-model="idaVersion"
-              class="mx-2 d-inline-block"
-              label="IDA Pro Version"
-              :items="idaVersionItems"/>
+      <VFlex
+        xs12
+        md6>
+        <VSelect
+          v-model="idaVersion"
+          class="mx-2 d-inline-block"
+          label="IDA Pro Version"
+          :items="idaVersionItems"/>
 
-            <VTooltip
-              v-show="!isBinaryFiles"
-              top>
-              <VIcon
-                slot="activator"
-                style="cursor: pointer">
-                help_outline
-              </VIcon>
+        <VTooltip
+          v-show="!isBinaryFiles"
+          top>
+          <VIcon
+            slot="activator"
+            style="cursor: pointer">
+            help_outline
+          </VIcon>
 
-              <span>Make sure to select the corresponding IDA Pro version of the .idb/.i64 files</span>
-            </VTooltip>
-          </VFlex>
+          <span>Make sure to select the corresponding IDA Pro version of the .idb/.i64 files</span>
+        </VTooltip>
+      </VFlex>
 
-          <VFlex
-            class="text-md-right"
-            xs12
-            md6>
-            <VRadioGroup
-              v-model="isBinaryFiles"
-              class="d-inline-block"
-              row>
-              <VRadio
-                label="binary file"
-                :value="true"
-                disabled/>
-              <VRadio
-                label=".idb/.i64 file"
-                :value="false"/>
-            </VRadioGroup>
-          </VFlex>
-        </VLayout>
+      <VFlex
+        class="text-md-right"
+        xs12
+        md6>
+        <VRadioGroup
+          v-model="isBinaryFiles"
+          class="d-inline-block"
+          row>
+          <VRadio
+            label="binary file"
+            :value="true"
+            disabled/>
+          <VRadio
+            label=".idb/.i64 file"
+            :value="false"/>
+        </VRadioGroup>
+      </VFlex>
+    </VLayout>
 
-        <VDataTable
-          :headers="tableHeaders"
-          :items="tableItems"
-          hide-actions>
-          <template slot="no-data">
-            <div class="text-xs-center">
-              <VBtn
-                flat
-                title="Add Files"
-                :disabled="hasPending"
-                @click="$refs.files.click()">
-                Add files to upload
-              </VBtn>
-            </div>
-          </template>
+    <VDataTable
+      :headers="tableHeaders"
+      :items="tableItems"
+      hide-actions>
+      <template slot="no-data">
+        <div class="text-xs-center">
+          <VBtn
+            flat
+            title="Add Files"
+            :disabled="hasPending"
+            @click="$refs.files.click()">
+            Add files to upload
+          </VBtn>
+        </div>
+      </template>
 
-          <template
-            slot="items"
-            slot-scope="props">
-            <td>{{ props.index }}</td>
+      <template
+        slot="items"
+        slot-scope="props">
+        <td>{{ props.index }}</td>
 
-            <td>{{ props.item.file.name }}</td>
+        <td>{{ props.item.file.name }}</td>
 
-            <td>{{ $helpers.filesize(props.item.file.size) }}</td>
+        <td>{{ $helpers.filesize(props.item.file.size) }}</td>
 
-            <td>
-              <VProgressLinear
-                :color="getFileStatus(props.item).color"
-                :value="props.item.percentage"/>
-            </td>
+        <td>
+          <VProgressLinear
+            :color="getFileStatus(props.item).color"
+            :value="props.item.percentage"/>
+        </td>
 
-            <td>
-              <span :class="`${getFileStatus(props.item).color}--text`">
-                {{ getFileStatus(props.item).text }}
-              </span>
-            </td>
+        <td>
+          <span :class="`${getFileStatus(props.item).color}--text`">
+            {{ getFileStatus(props.item).text }}
+          </span>
+        </td>
 
-            <td>
-              <VBtn
-                class="ml-0"
-                :title="props.item.status === 2 ? 'Finish' : 'Remove this file'"
-                icon
-                small
-                :disabled="props.item.status === 1"
-                @click="removeFile(props.index)">
-                <VIcon>{{ props.item.status === 2 ? 'check' : 'close' }}</VIcon>
-              </VBtn>
-            </td>
-          </template>
-        </VDataTable>
-      </VCard>
-    </VFlex>
-  </VLayout>
+        <td>
+          <VBtn
+            class="ml-0"
+            :title="props.item.status === 2 ? 'Finish' : 'Remove this file'"
+            icon
+            small
+            :disabled="props.item.status === 1"
+            @click="removeFile(props.index)">
+            <VIcon>{{ props.item.status === 2 ? 'check' : 'close' }}</VIcon>
+          </VBtn>
+        </td>
+      </template>
+    </VDataTable>
+  </VCard>
 </template>
 
 <script lang="ts">

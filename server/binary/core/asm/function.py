@@ -1,3 +1,18 @@
+"""
+Function
+
+- type
+  - 0 Module Function
+  - 2 External Library Function
+  - 3 Jump to Library Function (always have demangled_name)
+
+- parent_id
+  ID of parent expression_node
+
+- position
+  Position of nodes that has the same parent_id
+"""
+
 from .basicblock import BasicBlock
 from .instruction import Instruction
 from .operand import Operand

@@ -31,8 +31,8 @@
 
       <VContainer
         class="px-3 pb-3 pt-0"
-        fluid
-        full-height>
+        grid-list-lg
+        fluid>
         <VSlideYReverseTransition mode="out-in">
           <RouterView/>
         </VSlideYReverseTransition>

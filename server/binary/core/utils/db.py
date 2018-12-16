@@ -39,7 +39,7 @@ class Database(object):
       db_user=self.settings['POSTGRES']['USER'],
       db_password=self.settings['POSTGRES']['PASSWORD'],
       db_name=self.settings['POSTGRES']['NAME'],
-      version=version
+      version=version,
     )
     return binex.import_idb(idb)
 
@@ -78,7 +78,7 @@ class Database(object):
           (SELECT COUNT(*) FROM ex_%(module_id)s_functions) AS functions_count, \
           (SELECT COUNT(*) FROM ex_%(module_id)s_basic_blocks) AS basic_blocks_count, \
           (SELECT COUNT(*) FROM ex_%(module_id)s_instructions) AS instructions_count', {
-          'module_id': module_id
+          'module_id': module_id,
         })
         result = zip_result(curs)
         return result[0]
@@ -90,7 +90,7 @@ class Database(object):
     with self.connection as conn:
       with conn.cursor() as curs:
         curs.execute('SELECT * FROM ex_%(module_id)s_callgraph', {
-          'module_id': module_id
+          'module_id': module_id,
         })
         return zip_result(curs)
 
@@ -103,7 +103,7 @@ class Database(object):
         curs.execute('SELECT * FROM ex_%(module_id)s_control_flow_graphs \
           WHERE parent_function=%(function_address)s', {
           'module_id': module_id,
-          'function_address': function_address
+          'function_address': function_address,
         })
         return zip_result(curs)
 
@@ -114,7 +114,7 @@ class Database(object):
     with self.connection as conn:
       with conn.cursor() as curs:
         curs.execute('SELECT * FROM ex_%(module_id)s_functions', {
-          'module_id': module_id
+          'module_id': module_id,
         })
         return zip_result(curs)
   
@@ -128,7 +128,7 @@ class Database(object):
           bb.id AS bb_id, bb.address AS bb_address, bb.parent_function AS bb_parent_function \
           FROM ex_%(module_id)s_functions AS func \
           INNER JOIN ex_%(module_id)s_basic_blocks AS bb ON bb.parent_function=func.address', {
-          'module_id': module_id
+          'module_id': module_id,
         })
         return zip_result(curs)
 
@@ -141,7 +141,7 @@ class Database(object):
         curs.execute('SELECT * FROM ex_%(module_id)s_basic_blocks \
           WHERE parent_function=%(function_address)s', {
           'module_id': module_id,
-          'function_address': function_address
+          'function_address': function_address,
         })
         return zip_result(curs)
 
@@ -158,7 +158,7 @@ class Database(object):
           INNER JOIN ex_%(module_id)s_basic_blocks AS bb ON bb.parent_function=func.address \
           INNER JOIN ex_%(module_id)s_basic_block_instructions AS bb_inst ON bb.id=bb_inst.basic_block_id \
           INNER JOIN ex_%(module_id)s_instructions AS inst ON bb_inst.instruction=inst.address', {
-          'module_id': module_id
+          'module_id': module_id,
         })
         return zip_result(curs)
 
@@ -191,14 +191,14 @@ class Database(object):
             INNER JOIN ex_%(module_id)s_basic_blocks ON id=basic_block_id \
             WHERE parent_function=%(function_address)s',{
             'module_id': module_id,
-            'function_address': function_address
+            'function_address': function_address,
           })
         elif basic_block_id != None:
           curs.execute('SELECT address,mnemonic FROM ex_%(module_id)s_instructions \
             INNER JOIN ex_%(module_id)s_basic_block_instructions ON instruction=address \
             WHERE basic_block_id=%(basic_block_id)s', {
             'module_id': module_id,
-            'basic_block_id': basic_block_id
+            'basic_block_id': basic_block_id,
           })
         return zip_result(curs)
   
@@ -217,7 +217,7 @@ class Database(object):
           INNER JOIN ex_%(module_id)s_basic_block_instructions AS bb_inst ON bb.id=bb_inst.basic_block_id \
           INNER JOIN ex_%(module_id)s_instructions AS inst ON bb_inst.instruction=inst.address \
           INNER JOIN ex_%(module_id)s_operands AS op ON inst.address=op.address', {
-          'module_id': module_id
+          'module_id': module_id,
         })
         return zip_result(curs)
   
@@ -266,7 +266,7 @@ class Database(object):
         curs.execute('SELECT * FROM ex_%(module_id)s_operands \
           WHERE address=%(instruction_address)s', {
             'module_id': module_id,
-            'instruction_address': instruction_address
+            'instruction_address': instruction_address,
           })
         return zip_result(curs)
   
@@ -280,7 +280,7 @@ class Database(object):
           exp_n.id,exp_n.type,exp_n.symbol,exp_n.immediate,exp_n.position,exp_n.parent_id \
           FROM ex_%(module_id)s_expression_tree_nodes AS exp_t_n \
           INNER JOIN ex_%(module_id)s_expression_nodes AS exp_n ON exp_t_n.expression_node_id=exp_n.id', {
-          'module_id': module_id
+          'module_id': module_id,
         })
         return zip_result(curs)
 
@@ -292,16 +292,16 @@ class Database(object):
       with conn.cursor() as curs:
         curs.execute("SELECT 'DROP TABLE IF EXISTS ' || tablename || ' CASCADE' FROM pg_tables \
           WHERE tablename like 'ex_%(module_id)s_%%';", {
-          'module_id': module_id
+          'module_id': module_id,
         })
         with conn.cursor() as curs2:
           for sql in curs:
             curs2.execute(sql[0])
           curs2.execute('DELETE FROM modules WHERE id=%(module_id)s', {
-            'module_id': module_id
+            'module_id': module_id,
           })
           curs2.execute('DELETE FROM module_objects WHERE id=%(module_id)s', {
-            'module_id': module_id
+            'module_id': module_id,
           })
   
   def save_module(self, module_id, obj, force=False):
@@ -316,7 +316,7 @@ class Database(object):
             ON conflict(id) \
             DO UPDATE SET data=%(obj)s', {
             'module_id': module_id,
-            'obj': pickle.dumps(obj)
+            'obj': pickle.dumps(obj),
           })
         else:
           curs.execute('INSERT INTO module_objects(id, data) \
@@ -324,7 +324,7 @@ class Database(object):
             ON conflict(id) \
             DO nothing', {
             'module_id': module_id,
-            'obj': pickle.dumps(obj)
+            'obj': pickle.dumps(obj),
           })
   
   def load_module(self, module_id):
@@ -335,7 +335,7 @@ class Database(object):
       with conn.cursor() as curs:
         curs.execute('SELECT data FROM module_objects \
           WHERE id=%(module_id)s', {
-          'module_id': module_id
+          'module_id': module_id,
         })
         result = curs.fetchone()
         if result != None:

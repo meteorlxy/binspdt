@@ -4,22 +4,22 @@
       color="white"
       flat>
       <VToolbarTitle>
-        <span>List of Modules</span>
+        <span>List of Analyses</span>
       </VToolbarTitle>
 
       <VSpacer/>
 
       <VBtn
         color="primary"
-        title="Upload New Modules"
-        :to="{ name: 'dashboard.modules.upload' }"
+        title="Create New Analysis"
+        :to="{ name: 'dashboard.analyses.new' }"
         :icon="$vuetify.breakpoint.smAndDown">
         <VIcon :left="!$vuetify.breakpoint.smAndDown">
-          backup
+          timeline
         </VIcon>
 
         <span class="hidden-sm-and-down">
-          Upload New Modules
+          New Analysis
         </span>
       </VBtn>
     </VToolbar>
@@ -43,7 +43,7 @@
         <VBtn
           slot="activator"
           color="indigo"
-          title="Manipulate selected modules"
+          title="Manipulate selected analyses"
           flat
           round
           :icon="$vuetify.breakpoint.smAndDown"
@@ -58,13 +58,13 @@
         </VBtn>
 
         <VList>
-          <VListTile @click="handleDeleteModules">
+          <VListTile @click="handleDeleteAnalyses">
             <VListTileAvatar>
               <VIcon>delete</VIcon>
             </VListTileAvatar>
 
             <VListTileTitle>
-              Delete Selected Modules
+              Delete Selected Analyses
             </VListTileTitle>
           </VListTile>
         </VList>
@@ -82,8 +82,8 @@
         single-line
         hide-details
         :disabled="isLoading"
-        @click:append="handleGetModules"
-        @keydown.enter="handleGetModules"/>
+        @click:append="handleGetAnalyses"
+        @keydown.enter="handleGetAnalyses"/>
     </VToolbar>
 
     <VDataTable
@@ -106,18 +106,24 @@
 
         <td>{{ props.item.id }}</td>
 
-        <td>{{ props.item.name }}</td>
+        <td>{{ props.item.description }}</td>
 
         <td class="hidden-xs-only">
-          {{ props.item.architecture }}
+          {{ $helpers.formatDateTime(props.item.created_at) }}
         </td>
 
-        <td class="hidden-xs-only">
-          {{ $helpers.formatDateTime(props.item.import_time) }}
-        </td>
+        <td>
+          <VChip
+            class="ma-0"
+            :color="getAnalysisStatus(props.item).color"
+            outline
+            small>
+            <VIcon left>
+              {{ getAnalysisStatus(props.item).icon }}
+            </VIcon>
 
-        <td class="hidden-sm-and-down">
-          {{ props.item.md5 }}
+            {{ getAnalysisStatus(props.item).text }}
+          </VChip>
         </td>
 
         <td>
@@ -126,8 +132,9 @@
             icon
             small
             color="primary"
-            title="Inpect this module"
-            :to="{ name: 'dashboard.modules.details', params: { id: props.item.id } }">
+            title="Inpect this analysis"
+            :to="{ name: 'dashboard.analyses.details', params: { id: props.item.id } }"
+            :disabled="!props.item.finished_at">
             <VIcon>search</VIcon>
           </VBtn>
 
@@ -136,8 +143,8 @@
             icon
             small
             color="error"
-            title="Remove this module"
-            @click="handleDeleteModule(props.item.id)">
+            title="Remove this analysis"
+            @click="handleDeleteAnalysis(props.item.id)">
             <VIcon>delete_outline</VIcon>
           </VBtn>
         </td>
@@ -152,15 +159,15 @@ import { namespace } from 'vuex-class'
 import { requestCatch } from '@/utils/catchError'
 
 @Component
-export default class ModulesIndex extends Vue {
-  @namespace('binary/modules').State('modules') modules
-  @namespace('binary/modules').State('isLoading') isLoading
-  @namespace('binary/modules').Action('getModules') getModules
-  @namespace('binary/modules').Action('deleteModule') deleteModule
-  @namespace('binary/modules').Action('deleteModules') deleteModules
+export default class AnalysesIndex extends Vue {
+  @namespace('binary/analyses').State('analyses') analyses
+  @namespace('binary/analyses').State('isLoading') isLoading
+  @namespace('binary/analyses').Action('getAnalyses') getAnalyses
+  @namespace('binary/analyses').Action('deleteAnalysis') deleteAnalysis
+  @namespace('binary/analyses').Action('deleteAnalyses') deleteAnalyses
 
   tablePagination: any = {
-    page: this.$store.state.binary.modules.modules.page,
+    page: this.$store.state.binary.analyses.analyses.page,
     rowsPerPage: 25,
     descending: true,
   }
@@ -172,39 +179,66 @@ export default class ModulesIndex extends Vue {
   get tableHeaders () {
     return [
       { text: '#', value: 'id' },
-      { text: 'Name', value: 'name' },
-      { text: 'Arch.', value: 'architecture', class: 'hidden-xs-only' },
-      { text: 'Upload Time', value: 'import_time', class: 'hidden-xs-only' },
-      { text: 'MD5', value: 'md5', class: 'hidden-sm-and-down' },
+      { text: 'Desc.', value: 'description' },
+      { text: 'Create Time', value: 'created_at', class: 'hidden-xs-only' },
+      { text: 'Status', value: '', sortable: false },
       { text: 'Actions', value: '', sortable: false },
     ]
   }
 
   get tableItems () {
-    return this.modules.data
+    return this.analyses.data
   }
 
   @Watch('tablePagination', { deep: true })
   onTablePaginationChange (val: any) {
-    this.handleGetModules()
+    this.handleGetAnalyses()
   }
 
   created () {
-    this.handleGetModules()
+    this.handleGetAnalyses()
   }
 
   resetSelected () {
     this.tableSelected.splice(0, this.tableSelected.length)
   }
 
-  async handleRefresh () {
-    this.resetSelected()
-    await this.handleGetModules()
+  getAnalysisStatus (analysis) {
+    if (analysis.finished_at) {
+      return {
+        color: 'success',
+        text: 'Done',
+        icon: 'check',
+      }
+    } else if (analysis.failed_at) {
+      return {
+        color: 'red',
+        text: 'Failed',
+        icon: 'priority_high',
+      }
+    } else if (analysis.started_at) {
+      return {
+        color: 'primary',
+        text: 'Running',
+        icon: 'sync',
+      }
+    } else {
+      return {
+        color: 'grey',
+        text: 'Pending',
+        icon: 'alarm',
+      }
+    }
   }
 
-  async handleGetModules () {
+  async handleRefresh () {
+    this.resetSelected()
+    await this.handleGetAnalyses()
+  }
+
+  async handleGetAnalyses () {
     const { sortBy, descending, page, rowsPerPage } = this.tablePagination
-    await this.getModules({
+    await this.getAnalyses({
       page: page,
       perPage: rowsPerPage,
       orderBy: `${descending ? '-' : ''}${sortBy}`,
@@ -212,44 +246,44 @@ export default class ModulesIndex extends Vue {
     })
   }
 
-  async handleDeleteModule (id) {
-    if (!confirm(`Confirm to delete module #${id} ?`)) {
+  async handleDeleteAnalysis (id) {
+    if (!confirm(`Confirm to delete analysis #${id} ?`)) {
       return false
     }
 
     try {
-      await this.deleteModule({ id })
+      await this.deleteAnalysis({ id })
 
       this.$notify({
         type: 'success',
         title: 'Success',
-        text: `Deleted module #${id} successfully.`,
+        text: `Deleted analysis #${id} successfully.`,
       })
 
-      await this.handleGetModules()
+      await this.handleGetAnalyses()
     } catch (error) {
       requestCatch(error)
     }
   }
 
-  async handleDeleteModules () {
-    if (!confirm(`Confirm to delete selected modules ?`)) {
+  async handleDeleteAnalyses () {
+    if (!confirm(`Confirm to delete selected analyses ?`)) {
       return false
     }
 
     try {
-      const modules = this.tableSelected.map(item => item.id)
-      await this.deleteModules({ modules })
+      const analyses = this.tableSelected.map(item => item.id)
+      await this.deleteAnalyses({ analyses })
 
       this.$notify({
         type: 'success',
         title: 'Success',
-        text: `Deleted selected modules successfully.`,
+        text: `Deleted selected analyses successfully.`,
       })
 
       this.resetSelected()
 
-      await this.handleGetModules()
+      await this.handleGetAnalyses()
     } catch (error) {
       requestCatch(error)
     }

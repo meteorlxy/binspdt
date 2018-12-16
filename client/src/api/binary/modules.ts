@@ -3,15 +3,17 @@ import { noop } from '@/utils/helpers'
 
 export const getModules = ({
   token,
+  paginate = true,
   page = 1,
   perPage = 25,
   orderBy = 'id',
-  search,
+  search = '',
 }) => {
   return axios.request({
     url: '/api/v1/binary/modules',
     method: 'get',
     params: {
+      '_paginate': paginate,
       '_page': page,
       '_per_page': perPage,
       '_order_by': orderBy,
@@ -40,7 +42,7 @@ export const getModule = ({
   id,
 }) => {
   return axios.request({
-    url: `/api/v1/binary/modules/count/${id}`,
+    url: `/api/v1/binary/modules/${id}`,
     method: 'get',
     headers: {
       'Authorization': `Token ${token}`,
@@ -99,10 +101,57 @@ export const postModules = ({
   })
 }
 
+export const getModuleFunctions = ({
+  token,
+  moduleId,
+}) => {
+  return axios.request({
+    url: `/api/v1/binary/modules/${moduleId}/functions`,
+    method: 'get',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+  })
+}
+
+export const getFunctionBasicBlocks = ({
+  token,
+  moduleId,
+  functionAddress,
+}) => {
+  return axios.request({
+    url: `/api/v1/binary/modules/${moduleId}/functions/${functionAddress}/basic_blocks`,
+    method: 'get',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+  })
+}
+
+export const getBasicBlockInstructions = ({
+  token,
+  moduleId,
+  functionAddress,
+  basicBlockId,
+}) => {
+  return axios.request({
+    url: `/api/v1/binary/modules/${moduleId}/functions/${functionAddress}/basic_blocks/${basicBlockId}/instructions`,
+    method: 'get',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+  })
+}
+
 export default {
   getModules,
   getModulesCount,
   getModule,
   deleteModule,
+  deleteModules,
   postModules,
+
+  getModuleFunctions,
+  getFunctionBasicBlocks,
+  getBasicBlockInstructions,
 }

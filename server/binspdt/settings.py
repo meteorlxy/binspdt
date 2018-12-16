@@ -18,7 +18,7 @@ dotenv.load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-STORAGE_DIR = os.path.join(BASE_DIR, 'storage')
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 
 PUBLIC_DIR = os.path.join(BASE_DIR, '..', 'client', 'public')
 
@@ -144,6 +144,28 @@ AUTH_PASSWORD_VALIDATORS = [
     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
   },
 ]
+
+LOGGING = {
+  'version': 1,
+  'disable_existing_loggers': False,
+  'handlers': {
+    'file': {
+      'level': 'DEBUG',
+      'class': 'logging.FileHandler',
+      'filename': os.path.join(LOGS_DIR, 'debug.log'),
+    },
+    'console': {
+      'level': 'INFO',
+      'class': 'logging.StreamHandler',
+    },
+  },
+  'loggers': {
+    'binspdt.tasks': {
+      'handlers': ['console', 'file'],
+      'propagate': True,
+    },
+  },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

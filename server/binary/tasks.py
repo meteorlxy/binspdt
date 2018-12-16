@@ -1,50 +1,59 @@
-import os
+import logging
+
 from celery import shared_task
-from binary.utils import db, analysis
-from binary.core.analysis.api import analyse_api as api
+
+from django.utils import timezone
+
+from binary.utils import db
+from binary.models import ModuleAnalysis
+from binary.core.analysis.api import analyse_api
+
+logger = logging.getLogger('binspdt.tasks')
+
+def _start(id):
+  analysis = ModuleAnalysis.objects.get(id=id)
+  if analysis.started_at == None:
+    analysis.started_at = timezone.now()
+    analysis.save()
+    logger.info('[task:run_analysis][id:{}] Analysis started'.format(id))
+
+def _finish(id, data):
+  analysis = ModuleAnalysis.objects.get(id=id)
+  if analysis.started_at == None:
+    analysis.data = data
+    analysis.finished_at = timezone.now()
+    analysis.save()
+    logger.info('[task:run_analysis][id:{}] Analysis finished'.format(id))
+
+def _fail(id):
+  analysis = ModuleAnalysis.objects.get(id=id)
+  if analysis.failed_at == None:
+    analysis.failed_at = timezone.now()
+    analysis.save()
+    logger.info('[task:run_analysis][id:{}] Analysis failed'.format(id))
 
 @shared_task
-def module_import(tmp_filename, ida_version):
-  db.import_idb(tmp_filename, ida_version)
-  os.remove(tmp_filename)
-
-@shared_task
-def analyse_api(params, path, type, module_1_id, module_2_id):
+def run_analysis(id):
   try:
-    # Check the analysis status
-    status = analysis.check_status(path)
+    _start(id)
 
-    if status == 'done':
-      return True
-    
-    if status == 'pending':
-      return False
-    
-    if status == 'failed':
-      analysis.delete(path)
-
-    # Run the analysis
-    analysis.start(
-      path=path,
-      type=type,
-      module_1_id=module_1_id,
-      module_2_id=module_2_id
-    )
-
-    result = api(
+    result = analyse_api(
       db=db,
-      module_1_id=module_1_id,
-      module_2_id=module_2_id,
-      k=params['k'],
-      algorithm=params['algorithm']
+      module_1_id=analysis.module_1_id,
+      module_2_id=analysis.module_2_id,
+      k=analysis.params['k'],
+      algorithm=analysis.params['algorithm'],
     )
 
-    analysis.finish(
-      path=path,
-      result=result
-    )
+    _finish(id, result)
+
     return True
-  except Exception:
-    analysis.fail(path=path)
+  except Exception as e:
+    _fail(id)
+    logger.error(e)
+    return False
+  except ModuleAnalysis.DoesNotExist as e:
+    logger.info('[task:run_analysis][id:{}] Analysis does not exist'.format(id))
+    logger.error(e)
     return False
 
