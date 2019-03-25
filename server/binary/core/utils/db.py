@@ -27,11 +27,10 @@ class Database(object):
       port=self.settings['POSTGRES']['PORT'],
     )
 
-  def import_idb(self, idb, version='6.8'):
+  def import_bin(self, file, x64, version='6.8'):
     """
-    Import idb file into database
+    Import binary file into database
     """
-    x64 = os.path.splitext(idb)[1] == '.i64'
     binex = Binexport(
       ida_exe=ida.get_ida_exe(self.settings['IDA'][version]['PATH'], version, x64),
       db_host=self.settings['POSTGRES']['HOST'],
@@ -41,7 +40,23 @@ class Database(object):
       db_name=self.settings['POSTGRES']['NAME'],
       version=version,
     )
-    return binex.import_idb(idb)
+    return binex.import_bin(file)
+
+  def import_idb(self, file, version='6.8'):
+    """
+    Import idb file into database
+    """
+    x64 = os.path.splitext(file)[1] == '.i64'
+    binex = Binexport(
+      ida_exe=ida.get_ida_exe(self.settings['IDA'][version]['PATH'], version, x64),
+      db_host=self.settings['POSTGRES']['HOST'],
+      db_port=self.settings['POSTGRES']['PORT'],
+      db_user=self.settings['POSTGRES']['USER'],
+      db_password=self.settings['POSTGRES']['PASSWORD'],
+      db_name=self.settings['POSTGRES']['NAME'],
+      version=version,
+    )
+    return binex.import_idb(file)
 
   def get_modules(self):
     """

@@ -107,6 +107,7 @@ export default {
 
     async postModules ({ rootState }, {
       files,
+      filesType,
       version,
       onUploadProgress,
     }) {
@@ -114,6 +115,7 @@ export default {
         const response = await postModules({
           token: rootState.token,
           files,
+          filesType,
           version,
           onUploadProgress,
         })

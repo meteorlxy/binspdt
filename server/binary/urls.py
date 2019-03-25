@@ -13,7 +13,7 @@ urlpatterns = [
   # Module details and delete
   path('modules/<int:module_id>', Modules.as_view({ 'get': 'details', 'delete': 'delete' }), name='modules.details'),
   # Module import
-  path('modules/v/<ida_version>', Modules.as_view({ 'post': 'create' }), name='modules.upload'),
+  path('modules/import/<file_type>/<ida_version>', Modules.as_view({ 'post': 'create' }), name='modules.upload'),
 
   # Module functions
   path(

@@ -82,6 +82,7 @@ export const deleteModules = ({
 export const postModules = ({
   token,
   files,
+  filesType,
   version = '6.8',
   onUploadProgress = noop,
 }) => {
@@ -90,7 +91,7 @@ export const postModules = ({
     formData.append(`file`, file)
   }
   return axios.request({
-    url: `/api/v1/binary/modules/v/${version}`,
+    url: `/api/v1/binary/modules/import/${filesType}/${version}`,
     method: 'post',
     headers: {
       'Content-Type': 'multipart/form-data',

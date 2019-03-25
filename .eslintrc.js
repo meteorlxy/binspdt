@@ -22,7 +22,4 @@ module.exports = {
       'selfClosingTag': 'never',
     }],
   },
-  parserOptions: {
-    parser: 'typescript-eslint-parser',
-  },
 }

@@ -1,6 +1,11 @@
 import os
+import shutil
 import time
 import tempfile
+import traceback
+
+import random
+import string
 
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -129,7 +134,7 @@ class Modules(ViewSet):
         }
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
-  def create(self, request, ida_version, format='json'):
+  def create(self, request, file_type, ida_version, format='json'):
     """
     Create a module from uploaded idb file
     """
@@ -139,18 +144,37 @@ class Modules(ViewSet):
 
       for upload_file in upload_files:
         # Save the uploaded file to temp dir
-        tmp_filename = os.path.join(tempfile.gettempdir(), 'binspdt.' + time.strftime('%Y%m%d%H%M%S', time.localtime()) + '.' + upload_file.name)
+        tmp_dir = os.path.join(tempfile.gettempdir(), 'binspdt.%s.%s' % (
+          time.strftime('%Y%m%d%H%M%S', time.localtime()),
+          ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+        ))
+        tmp_filename = os.path.join(tmp_dir, upload_file.name)
+        if not os.path.exists(tmp_dir):
+          os.makedirs(tmp_dir)
         with open(tmp_filename, 'wb') as f:
           for chunk in upload_file.chunks(): 
             f.write(chunk)
 
-        # Import the uploaded idb file
-        db.import_idb(tmp_filename, ida_version)
-
-        # Delete the uploaded file from temp dir
-        os.remove(tmp_filename)
+        try:
+          if file_type == 'idb':
+            # Import the uploaded idb file
+            db.import_idb(file=tmp_filename, version=ida_version)
+          elif file_type == 'x86_32':
+            # Import the uploaded binary file
+            db.import_bin(file=tmp_filename, x64=False, version=ida_version)
+          elif file_type == 'x86_64':
+            # Import the uploaded binary file
+            db.import_bin(file=tmp_filename, x64=True, version=ida_version)
+          else:
+            return Response({
+              'msg': 'files type not allowed',
+            }, status=status.HTTP_400_BAD_REQUEST)
+        finally:
+          # Delete the uploaded file from temp dir
+          shutil.rmtree(tmp_dir)
       return Response(status=status.HTTP_201_CREATED)
     except Exception as e:
+      print(traceback.format_exc())
       return Response({
         'msg': 'failed to create module',
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

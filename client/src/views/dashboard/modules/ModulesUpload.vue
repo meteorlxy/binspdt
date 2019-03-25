@@ -90,6 +90,13 @@
 
           <span>Make sure to select the corresponding IDA Pro version of the .idb/.i64 files</span>
         </VTooltip>
+
+        <VSelect
+          v-if="isBinaryFiles"
+          v-model="selectedFilesType"
+          class="mx-2 d-inline-block"
+          label="Binary file arch."
+          :items="filesTypeItems"/>
       </VFlex>
 
       <VFlex
@@ -102,8 +109,7 @@
           row>
           <VRadio
             label="binary file"
-            :value="true"
-            disabled/>
+            :value="true"/>
           <VRadio
             label=".idb/.i64 file"
             :value="false"/>
@@ -181,10 +187,25 @@ export default class ModulesUpload extends Vue {
 
   idaVersion: String = '6.8'
 
+  selectedFilesType: String = 'x86_32'
+
   get idaVersionItems () {
     return [
       '6.8',
     ]
+  }
+
+  get filesTypeItems () {
+    return [
+      'x86_32',
+      'x86_64',
+    ]
+  }
+
+  get filesType () {
+    return this.isBinaryFiles
+      ? this.selectedFilesType
+      : 'idb'
   }
 
   get filesAccept () {
@@ -308,6 +329,7 @@ export default class ModulesUpload extends Vue {
         // Create the post file promise
         const postPromise = this.postModules({
           files: [file.file],
+          filesType: this.filesType,
           version: this.idaVersion,
           onUploadProgress: (progress) => {
             // Watch the upload progress

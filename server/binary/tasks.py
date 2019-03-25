@@ -19,7 +19,7 @@ def _start(id):
 
 def _finish(id, data):
   analysis = ModuleAnalysis.objects.get(id=id)
-  if analysis.started_at == None:
+  if analysis.finished_at == None:
     analysis.data = data
     analysis.finished_at = timezone.now()
     analysis.save()
@@ -36,6 +36,8 @@ def _fail(id):
 def run_analysis(id):
   try:
     _start(id)
+
+    analysis = ModuleAnalysis.objects.get(id=id)
 
     result = analyse_api(
       db=db,
