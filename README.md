@@ -1,4 +1,6 @@
-# binspdt - BINary Software Plagiarism Detection Tool
+# binspdt
+
+> BINary Software Plagiarism Detection Tool
 
 Still a work in progress
 
