@@ -90,6 +90,7 @@
       v-model="tableSelected"
       :headers="tableHeaders"
       :items="tableItems"
+      :total-items="tableItemsTotal"
       :loading="isLoading"
       :pagination.sync="tablePagination"
       :rows-per-page-items="[10, 25, 50]"
@@ -188,6 +189,10 @@ export default class AnalysesIndex extends Vue {
 
   get tableItems () {
     return this.analyses.data
+  }
+
+  get tableItemsTotal () {
+    return this.analyses.count
   }
 
   @Watch('tablePagination', { deep: true })

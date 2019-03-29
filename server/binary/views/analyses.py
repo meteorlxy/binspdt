@@ -69,11 +69,16 @@ class Analyses(ViewSet):
     qeuryset = ModuleAnalysis.objects.get(id=analysis_id)
     data = ModuleAnalysisDetailsSerializer(qeuryset).data
 
-    if data['method'] == 'api_set':
-      data['data'] = normalize_api_result(data['data'])
-    return Response({
-      'data': data,
-    })
+    try:
+      if data['method'] == 'api_set':
+        data['data'] = normalize_api_result(data['data'])
+      return Response({
+        'data': data,
+      })
+    except Exception:
+      return Response({
+        'msg': 'failed to get the details of analysis #' + analysis_id,
+      }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
   def delete(self, request, analysis_id, format='json'):
     """

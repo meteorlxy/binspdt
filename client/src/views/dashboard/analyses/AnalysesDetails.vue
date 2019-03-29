@@ -48,7 +48,13 @@ export default class AnalysesDetails extends Vue {
       const response = await this.getAnalysis({ id: this.id })
       this.analysis = response.data.data
     } catch (error) {
-
+      // Show the notice
+      this.$notify({
+        type: 'error',
+        title: 'Error',
+        text: `Failed to load the analyse result.`,
+      })
+      this.$router.go(-1)
     } finally {
       this.isLoading = false
     }

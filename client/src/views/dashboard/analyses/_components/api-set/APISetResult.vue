@@ -265,7 +265,7 @@ export default class APISetResult extends Vue {
   mounted () {
     setTimeout(() => {
       this.overallSimilarity = this.analysis.data['overall_similarity']
-    }, 1000)
+    }, 500)
   }
 
   async handleGetModule () {
