@@ -49,6 +49,12 @@ def jaccard_sim(set_1, set_2):
     return 0
   return len(intersection) / len(union)
 
+def modified_jaccard_sim(set_1, set_2):
+  intersection = set_1 & set_2
+  if len(intersection) == 0:
+    return 0
+  return 2 * len(intersection) / (len(set_1) + len(set_2))
+
 def get_similarity_matrix(module_1, module_2, k):
   if hasattr(module_1, 'api_birthmark') and hasattr(module_2, 'api_birthmark'):
     if (k in module_1.api_birthmark) and (k in module_2.api_birthmark):
@@ -56,7 +62,7 @@ def get_similarity_matrix(module_1, module_2, k):
       for mod1 in module_1.api_birthmark[k].values():
         mod1_sim = list()
         for mod2 in module_2.api_birthmark[k].values():
-          mod1_sim.append(jaccard_sim(mod1, mod2))
+          mod1_sim.append(modified_jaccard_sim(mod1, mod2))
         sim_matrix.append(mod1_sim)
       return sim_matrix
   return False
