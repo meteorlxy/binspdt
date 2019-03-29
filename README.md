@@ -8,7 +8,7 @@ Still a work in progress
 
 ```sh
 pipenv install
-yarn install
+npm run install
 ```
 
 ### Config Django
@@ -24,7 +24,7 @@ Config `DATABASE` and `IDA` settings.
 After config `DATABASE` correctly, migrate the database tables.
 
 ```sh
-yarn migrate
+npm run migrate
 ```
 
 ### Build web client
@@ -32,14 +32,14 @@ yarn migrate
 Build the web client / develop the web client
 
 ```sh
-yarn build # Build
-yarn dev # Develop in watch mode
+npm run build # Build
+npm run dev # Develop in watch mode
 ```
 
 ### Start Django dev server
 
 ```sh
-yarn start
+npm run start
 ```
 
 ## Notice
@@ -49,6 +49,3 @@ You should have [IDA Pro](https://www.hex-rays.com/products/ida/) and correspond
 - IDA Pro 6.8 => binexport 8
 - IDA Pro 6.95 => binexport 9
 - IDA Pro 7.0 => binexport 10
-
-**Be sure to obey their license**
-
