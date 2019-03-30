@@ -82,11 +82,11 @@
         <VTooltip
           v-show="!isBinaryFiles"
           top>
-          <VIcon
-            slot="activator"
-            style="cursor: pointer">
-            help_outline
-          </VIcon>
+          <template v-slot:activator>
+            <VIcon style="cursor: pointer">
+              help_outline
+            </VIcon>
+          </template>
 
           <span>Make sure to select the corresponding IDA Pro version of the .idb/.i64 files</span>
         </VTooltip>
@@ -121,7 +121,7 @@
       :headers="tableHeaders"
       :items="tableItems"
       hide-actions>
-      <template slot="no-data">
+      <template v-slot:no-data>
         <div class="text-xs-center">
           <VBtn
             flat
@@ -133,9 +133,7 @@
         </div>
       </template>
 
-      <template
-        slot="items"
-        slot-scope="props">
+      <template v-slot:items="props">
         <td>{{ props.index }}</td>
 
         <td>{{ props.item.file.name }}</td>

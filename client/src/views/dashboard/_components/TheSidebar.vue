@@ -60,15 +60,17 @@
       </VListTile>
 
       <VListGroup no-action>
-        <VListTile slot="activator">
-          <VListTileAction>
-            <VIcon>local_library</VIcon>
-          </VListTileAction>
+        <template v-slot:activator>
+          <VListTile>
+            <VListTileAction>
+              <VIcon>local_library</VIcon>
+            </VListTileAction>
 
-          <VListTileContent>
-            <VListTileTitle>Wiki</VListTileTitle>
-          </VListTileContent>
-        </VListTile>
+            <VListTileContent>
+              <VListTileTitle>Wiki</VListTileTitle>
+            </VListTileContent>
+          </VListTile>
+        </template>
 
         <VListTile
           :to="{ name: 'dashboard.wiki' }"

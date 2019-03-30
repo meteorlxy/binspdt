@@ -40,22 +40,23 @@
       <VMenu
         offset-y
         :disabled="tableSelected.length === 0 || isLoading">
-        <VBtn
-          slot="activator"
-          color="indigo"
-          title="Manipulate selected modules"
-          flat
-          round
-          :icon="$vuetify.breakpoint.smAndDown"
-          :disabled="tableSelected.length === 0 || isLoading">
-          <VIcon :left="!$vuetify.breakpoint.smAndDown">
-            check_box
-          </VIcon>
+        <template v-slot:activator>
+          <VBtn
+            color="indigo"
+            title="Manipulate selected modules"
+            flat
+            round
+            :icon="$vuetify.breakpoint.smAndDown"
+            :disabled="tableSelected.length === 0 || isLoading">
+            <VIcon :left="!$vuetify.breakpoint.smAndDown">
+              check_box
+            </VIcon>
 
-          <span class="hidden-sm-and-down">
-            Manipulate Selected
-          </span>
-        </VBtn>
+            <span class="hidden-sm-and-down">
+              Manipulate Selected
+            </span>
+          </VBtn>
+        </template>
 
         <VList>
           <VListTile @click="handleDeleteModules">
@@ -95,9 +96,7 @@
       :pagination.sync="tablePagination"
       :rows-per-page-items="[10, 25, 50]"
       select-all>
-      <template
-        slot="items"
-        slot-scope="props">
+      <template v-slot:items="props">
         <td>
           <VCheckbox
             v-model="props.selected"

@@ -14,22 +14,24 @@
           thumb-label="always"
           hint="Function call depth used in analysis. [default: 2]"
           persistent-hint>
-          <VBtn
-            slot="prepend"
-            :to="{ name: 'dashboard.wiki.api-set' }"
-            target="_blank"
-            icon
-            flat>
-            <VIcon>
-              help_outline
-            </VIcon>
-          </VBtn>
+          <template v-slot:prepend>
+            <VBtn
+              :to="{ name: 'dashboard.wiki.api-set' }"
+              target="_blank"
+              icon
+              flat>
+              <VIcon>
+                help_outline
+              </VIcon>
+            </VBtn>
+          </template>
 
-          <span
-            slot="append"
-            class="ml-2">
-            {{ params.k }}
-          </span>
+          <template v-slot:append>
+            <span
+              class="ml-2">
+              {{ params.k }}
+            </span>
+          </template>
         </VSlider>
       </VCardText>
     </VFlex>
@@ -44,16 +46,17 @@
           label="Matching Algorithm"
           hint="Matching algorithm used to match similar functions. [default: km]"
           persistent-hint>
-          <VBtn
-            slot="prepend"
-            :to="{ name: 'dashboard.wiki.api-set' }"
-            target="_blank"
-            icon
-            flat>
-            <VIcon>
-              help_outline
-            </VIcon>
-          </VBtn>
+          <template v-slot:prepend>
+            <VBtn
+              :to="{ name: 'dashboard.wiki.api-set' }"
+              target="_blank"
+              icon
+              flat>
+              <VIcon>
+                help_outline
+              </VIcon>
+            </VBtn>
+          </template>
         </VSelect>
       </VCardText>
     </VFlex>

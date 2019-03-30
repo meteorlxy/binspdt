@@ -1,8 +1,6 @@
 <template>
   <VBreadcrumbs :items="items">
-    <template
-      slot="item"
-      slot-scope="{ item: { text, href, disabled } }">
+    <template v-slot:item="{ item: { text, href, disabled } }">
       <VBreadcrumbsItem
         :to="href"
         :disabled="disabled"

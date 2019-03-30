@@ -2,9 +2,7 @@
   <VueNotification
     width="100%"
     :style="style">
-    <template
-      slot="body"
-      slot-scope="{ item: { title = '', type = 'info', text = ''}, close }">
+    <template v-slot:body="{ item: { title, type, text }, close }">
       <VAlert
         class="my-0"
         :type="type"

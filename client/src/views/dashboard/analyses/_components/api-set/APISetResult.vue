@@ -78,11 +78,11 @@
                 thumb-label="always"
                 hint="Function call depth used in analysis. [default: 2]"
                 persistent-hint>
-                <span
-                  slot="append"
-                  class="ml-2">
-                  {{ analysis.params.k }}
-                </span>
+                <template v-slot:append>
+                  <span class="ml-2">
+                    {{ analysis.params.k }}
+                  </span>
+                </template>
               </VSlider>
             </VCardText>
 
@@ -142,9 +142,7 @@
             <VDataTable
               :headers="tableHeaders"
               :items="tableItems">
-              <template
-                slot="items"
-                slot-scope="props">
+              <template v-slot:items="props">
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{ $helpers.decToHex(props.item.module_1_function_address) }}</td>
                   <td>{{ $helpers.decToHex(props.item.module_2_function_address) }}</td>
@@ -152,9 +150,7 @@
                 </tr>
               </template>
 
-              <template
-                slot="expand"
-                slot-scope="props">
+              <template v-slot:expand="props">
                 <VLayout
                   class="pa-3"
                   row>

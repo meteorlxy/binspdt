@@ -16,23 +16,27 @@
       :items="modules"
       :item-text="item => `#${item.id} ${item.name}`"
       :item-value="item => item">
-      <VSlideXReverseTransition
+      <template
         v-if="hasConfirmed"
-        slot="append-outer">
-        <VIcon @click="hasConfirmed = false">
-          edit
-        </VIcon>
-      </VSlideXReverseTransition>
+        v-slot:append-outer>
+        <VSlideXReverseTransition>
+          <VIcon @click="hasConfirmed = false">
+            edit
+          </VIcon>
+        </VSlideXReverseTransition>
+      </template>
 
-      <VListTile slot="no-data">
-        <template v-if="hasLoaded">
-          No matched modules
-        </template>
+      <template v-slot:no-data>
+        <VListTile>
+          <template v-if="hasLoaded">
+            No matched modules
+          </template>
 
-        <template v-else>
-          Type to search modules
-        </template>
-      </VListTile>
+          <template v-else>
+            Type to search modules
+          </template>
+        </VListTile>
+      </template>
     </VAutocomplete>
 
     <VExpandTransition v-if="selectedModule && !hasConfirmed">
