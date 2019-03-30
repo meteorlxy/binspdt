@@ -1,5 +1,5 @@
 <template>
-  <PageLoading v-if="isLoading"/>
+  <PageLoading v-if="isLoadingModule"/>
 
   <VLayout
     v-else
@@ -41,21 +41,86 @@
               </div>
             </VCardTitle>
 
-            <VTreeview
-              :items="treeviewItems"
-              item-text="text"
-              item-key="address"
-              :load-children="handleLoadChildren"
-              activatable
-              open-on-click>
-              <template
-                slot="prepend"
-                slot-scope="{ item }">
-                <VIcon>
-                  {{ item.icon }}
-                </VIcon>
+            <VDataTable
+              :headers="functionTableHeaders"
+              :items="functionTableItems"
+              :loading="isLoadingFunctions"
+              :rows-per-page-items="[10, 20, 50, 100]">
+              <template v-slot:items="props">
+                <tr @click="handleGetFunctionBasicBlocks(props.item)">
+                  <td>{{ $helpers.decToHex(props.item.address) }}</td>
+                  <td>{{ props.item.name }}</td>
+                  <td>{{ props.item.module_name }}</td>
+                  <td>{{ props.item.type }}</td>
+                </tr>
               </template>
-            </VTreeview>
+            </VDataTable>
+          </VCard>
+        </VFlex>
+
+        <VFlex
+          v-show="displayFunction"
+          xs12>
+          <VCard>
+            <VCardTitle>
+              <div>
+                <div class="headline">
+                  <slot>Basic Blocks</slot>
+                </div>
+
+                <div class="grey--text">
+                  All basic blocks of function @{{ $helpers.decToHex(displayFunction) }}
+                </div>
+              </div>
+            </VCardTitle>
+
+            <VDataTable
+              :headers="basicBlockTableHeaders"
+              :items="basicBlockTableItems"
+              :loading="isLoadingBasicBlocks"
+              :rows-per-page-items="[10, 20, 50, 100]">
+              <template v-slot:items="props">
+                <tr @click="handleGetBasicBlockInstructions(props.item)">
+                  <td>{{ $helpers.decToHex(props.item.address) }}</td>
+                  <td>{{ props.item.id }}</td>
+                  <td>{{ $helpers.decToHex(props.item.parent_function) }}</td>
+                </tr>
+              </template>
+            </VDataTable>
+          </VCard>
+        </VFlex>
+
+        <VFlex
+          v-show="displayBasicBlock"
+          xs12>
+          <VCard>
+            <VCardTitle>
+              <div>
+                <div class="headline">
+                  <slot>Instructions</slot>
+                </div>
+
+                <div class="grey--text">
+                  All instructions of basic block @{{ $helpers.decToHex(displayBasicBlock) }}
+                </div>
+              </div>
+            </VCardTitle>
+
+            <VDataTable
+              :headers="instructionTableHeaders"
+              :items="instructionTableItems"
+              :loading="isLoadingInstructions"
+              :rows-per-page-items="[10, 20, 50, 100]">
+              <template v-slot:items="props">
+                <tr>
+                  <td>{{ $helpers.decToHex(props.item.address) }}</td>
+                  <td>{{ props.item.mnemonic }}</td>
+                  <td>{{ props.item.operands[0] }}</td>
+                  <td>{{ props.item.operands[1] }}</td>
+                  <td>{{ props.item.operands[2] }}</td>
+                </tr>
+              </template>
+            </VDataTable>
           </VCard>
         </VFlex>
       </VLayout>
@@ -75,7 +140,7 @@ import { namespace } from 'vuex-class'
     PageLoading,
   },
 })
-export default class APISetResult extends Vue {
+export default class ModulesDetails extends Vue {
   @namespace('binary/modules').Action('getModule') getModule
   @namespace('binary/modules').Action('getModuleFunctions') getModuleFunctions
   @namespace('binary/modules').Action('getFunctionBasicBlocks') getFunctionBasicBlocks
@@ -86,12 +151,47 @@ export default class APISetResult extends Vue {
     required: true,
   }) id!: number
 
-  isLoading: boolean = false
+  isLoadingModule: boolean = false
+  isLoadingFunctions: boolean = false
+  isLoadingBasicBlocks: boolean = false
+  isLoadingInstructions: boolean = false
 
   moduleData: any = {}
   moduleFunctions: any = []
 
-  treeviewItems: any = []
+  functionTableItems: any = []
+  basicBlockTableItems: any = []
+  instructionTableItems: any = []
+
+  displayFunction: any = null
+  displayBasicBlock: any = null
+
+  get functionTableHeaders () {
+    return [
+      { text: 'Address', value: 'address' },
+      { text: 'Name', value: 'name' },
+      { text: 'Module', value: 'module_name' },
+      { text: 'Type', value: 'type' },
+    ]
+  }
+
+  get basicBlockTableHeaders () {
+    return [
+      { text: 'Address', value: 'address' },
+      { text: 'ID', value: 'id' },
+      { text: 'Parent Function', value: 'parent_function' },
+    ]
+  }
+
+  get instructionTableHeaders () {
+    return [
+      { text: 'Address', value: 'address' },
+      { text: 'Mnemonic', value: 'mnemonic' },
+      { text: 'Operand 1', sortable: false },
+      { text: 'Operand 2', sortable: false },
+      { text: 'Operand 3', sortable: false },
+    ]
+  }
 
   created () {
     this.handleGetModule()
@@ -108,7 +208,7 @@ export default class APISetResult extends Vue {
 
   async handleGetModule () {
     try {
-      this.isLoading = true
+      this.isLoadingModule = true
       const response = await this.getModule({
         id: this.id,
       })
@@ -116,76 +216,55 @@ export default class APISetResult extends Vue {
     } catch (error) {
 
     } finally {
-      this.isLoading = false
+      this.isLoadingModule = false
     }
   }
 
   async handleGetModuleFunctions () {
     try {
-      this.isLoading = true
+      this.isLoadingFunctions = true
       const response = await this.getModuleFunctions({
         moduleId: this.id,
       })
-      const moduleFunctions = response.data.data
-      this.treeviewItems = moduleFunctions.map(item => {
-        return {
-          address: item['address'],
-          text: item['demangled_name'] || item['name'],
-          type: 'function',
-          icon: 'functions',
-          children: (item.type === 0) ? [] : undefined,
-        }
-      })
+      this.functionTableItems = response.data.data
     } catch (error) {
 
     } finally {
-      this.isLoading = false
+      this.isLoadingFunctions = false
     }
   }
 
   async handleGetFunctionBasicBlocks (item) {
     try {
+      this.isLoadingBasicBlocks = true
+      this.displayBasicBlock = null
       const response = await this.getFunctionBasicBlocks({
         moduleId: this.id,
         functionAddress: item.address,
       })
-      const basicBlocks = response.data.data
-      item.children = basicBlocks.map(item => {
-        return {
-          id: item['id'],
-          address: item['address'],
-          'parent_function': item['parent_function'],
-          text: `Basic Block #${item['id']} @ ${this.$helpers.decToHex(item['address'])}`,
-          type: 'basic_block',
-          icon: 'view_headline',
-          children: [],
-        }
-      })
+      this.displayFunction = item.address
+      this.basicBlockTableItems = response.data.data
     } catch (error) {
 
     } finally {
+      this.isLoadingBasicBlocks = false
     }
   }
 
   async handleGetBasicBlockInstructions (item) {
     try {
+      this.isLoadingInstructions = true
       const response = await this.getBasicBlockInstructions({
         moduleId: this.id,
         functionAddress: item['parent_function'],
         basicBlockId: item.id,
       })
-      const instructions = response.data.data
-      item.children = instructions.map(item => {
-        return {
-          address: item['address'],
-          text: item['mnemonic'],
-          type: 'instruction',
-          icon: 'remove',
-        }
-      })
+      this.displayBasicBlock = item.address
+      this.instructionTableItems = response.data.data
     } catch (error) {
 
     } finally {
+      this.isLoadingInstructions = false
     }
   }
 }

@@ -28,12 +28,46 @@ class Operand(object):
 
     self.expression_tree = self._module.expression_trees[self.expression_tree_id]
 
-  def display(self):
-    pass
+    self.type = None
+    self.data_type = None
+    self.symbol = None
+    self.__parse()
+  
+  def __parse(self):
+    exp_tree = self._module.expression_trees[self.expression_tree_id]
+    exp_tree_nodes = list(exp_tree.values())
+    self.data_type = exp_tree_nodes[0]['symbol']
+    if len(exp_tree) == 2:
+      symbol_node = exp_tree_nodes[1]
+      if symbol_node['type'] == 2:
+        self.type = 'immediate value'
+      else:
+        self.type = 'register'
+      self.symbol = self.__get_reg_val_symbol(symbol_node)
+    else:
+      symbol_addr_type = exp_tree_nodes[1]['symbol']
+      symbol = str()
+      if exp_tree_nodes[3]['type'] == 4:
+        symbol_operation = exp_tree_nodes[3]['symbol']
+        symbol_list = map(self.__get_reg_val_symbol, exp_tree_nodes[4:])
+        symbol = '{}[{}]'.format(symbol_addr_type, ' {} '.format(symbol_operation).join(symbol_list))
+      else:
+        symbol = '{}[{}]'.format(symbol_addr_type, self.__get_reg_val_symbol(exp_tree_nodes[3]))
+      self.type = 'memory'
+      self.symbol = symbol
+  
+  def __get_reg_val_symbol(self, node):
+      if node['type'] == 2:
+        return hex(node['immediate'])
+      else:
+        return node['symbol']
 
   def __str__(self):
     return 'Operand: ' + {
       'address': self.address,
       'position': self.position,
       'expression_tree_id': self.expression_tree_id,
+      'type': self.type,
+      'data_type': self.data_type,
+      'symbol': self.symbol,
     }.__str__()

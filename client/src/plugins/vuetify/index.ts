@@ -46,7 +46,6 @@ import Vuetify, {
   VToolbarSideIcon,
   VToolbarTitle,
   VTooltip,
-  VTreeview,
 } from 'vuetify/lib'
 import 'vuetify/src/stylus/app.styl'
 
@@ -100,6 +99,5 @@ Vue.use(Vuetify, {
     VToolbarSideIcon,
     VToolbarTitle,
     VTooltip,
-    VTreeview,
   },
 })

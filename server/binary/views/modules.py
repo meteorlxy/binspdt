@@ -17,6 +17,7 @@ from rest_framework.response import Response
 from binary.models import Module, ModuleObject, ModuleAnalysis
 from binary.serializers import ModuleSerializer
 from binary.utils import db
+from binary.core.asm import Module as AsmModule, Instruction as AsmInstruction
 
 class Modules(ViewSet):
   """
@@ -193,6 +194,17 @@ class Modules(ViewSet):
     })
 
   def basic_block_instructions(self, request, module_id, function_address, basic_block_id, format='json'):
+    inst_list = db.get_basic_block_instructions(module_id=module_id, function_address=function_address, basic_block_id=basic_block_id)
+    asm_module = AsmModule(db, module_id)
+    data = list()
+    for inst in inst_list:
+      asm_inst = AsmInstruction(asm_module, inst)
+      asm_inst.load_operands()
+      data.append({
+        'address': asm_inst.address,
+        'mnemonic': asm_inst.mnemonic,
+        'operands': map(lambda item: item.symbol, asm_inst.operands.values()),
+      })
     return Response({
-      'data': db.get_basic_block_instructions(module_id=module_id, function_address=function_address, basic_block_id=basic_block_id),
+      'data': data,
     })
