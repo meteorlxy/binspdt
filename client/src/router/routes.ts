@@ -164,6 +164,17 @@ export default [
               linkText: 'API Set',
             },
           },
+
+          // Dashboard Wiki K-Gram
+          {
+            path: 'k-gram',
+            name: 'dashboard.wiki.k-gram',
+            component: () => import('@/views/dashboard/wiki/WikiKGram.vue'),
+            meta: {
+              title: 'K-Gram',
+              linkText: 'K-Gram',
+            },
+          },
         ],
       },
     ],

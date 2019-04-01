@@ -1,3 +1,4 @@
+import re
 import numpy as np
 from ..asm import Module
 from ..algorithms import KM
@@ -8,6 +9,10 @@ def normalize_api_name(raw_name):
     norm_name = norm_name.replace('__imp_', '')
   if norm_name.endswith('_0'):
     norm_name = norm_name.replace('_0', '')
+  # E.g. ctime@@GLIBC_2.2.5 => ctime
+  match = re.match('^([^@]*)@+.*$', norm_name)
+  if match:
+    norm_name = match.group(1)
   return norm_name
 
 def load_calls(module):
@@ -31,16 +36,17 @@ def get_k_depth(f, f_b, k):
     f_b |= func_call.api_calls
     get_k_depth(f, f_b, k-1)
 
-def generate_api_birthmark(module, k):
-  if not hasattr(module, 'api_birthmark'):
-    module.api_birthmark = dict()
-  if k not in module.api_birthmark:
-    module.api_birthmark[k] = dict()
+def generate_api_set_birthmark(module, k):
+  if not hasattr(module, 'api_set_birthmark'):
+    module.api_set_birthmark = dict()
+  if k not in module.api_set_birthmark:
+    birthmark = dict()
     for func in module.functions.values():
-      func_api_birthmark = func.api_calls.copy()
-      get_k_depth(func, func_api_birthmark, k-1)
-      if len(func_api_birthmark) > 0:
-        module.api_birthmark[k][func.address] = func_api_birthmark
+      func_api_set_birthmark = func.api_calls.copy()
+      get_k_depth(func, func_api_set_birthmark, k-1)
+      if len(func_api_set_birthmark) > 0:
+        birthmark[func.address] = func_api_set_birthmark
+    module.api_set_birthmark[k] = birthmark
 
 def jaccard_sim(set_1, set_2):
   union = set_1 | set_2
@@ -56,18 +62,18 @@ def modified_jaccard_sim(set_1, set_2):
   return 2 * len(intersection) / (len(set_1) + len(set_2))
 
 def get_similarity_matrix(module_1, module_2, k):
-  if hasattr(module_1, 'api_birthmark') and hasattr(module_2, 'api_birthmark'):
-    if (k in module_1.api_birthmark) and (k in module_2.api_birthmark):
+  if hasattr(module_1, 'api_set_birthmark') and hasattr(module_2, 'api_set_birthmark'):
+    if (k in module_1.api_set_birthmark) and (k in module_2.api_set_birthmark):
       sim_matrix = list()
-      for mod1 in module_1.api_birthmark[k].values():
+      for mod1 in module_1.api_set_birthmark[k].values():
         mod1_sim = list()
-        for mod2 in module_2.api_birthmark[k].values():
+        for mod2 in module_2.api_set_birthmark[k].values():
           mod1_sim.append(modified_jaccard_sim(mod1, mod2))
         sim_matrix.append(mod1_sim)
       return sim_matrix
   return False
 
-def analyse_api(db, module_1_id, module_2_id, k=2, algorithm='km', precision=1000):
+def analyse_api_set(db, module_1_id, module_2_id, k=2, algorithm='km', precision=1000):
   print('Generating API birthmark...')
   module_1 = Module(db=db, module_id=module_1_id).load().load_callgraph()
   module_2 = Module(db=db, module_id=module_2_id).load().load_callgraph()
@@ -75,8 +81,8 @@ def analyse_api(db, module_1_id, module_2_id, k=2, algorithm='km', precision=100
   load_calls(module_1)
   load_calls(module_2)
 
-  generate_api_birthmark(module_1, k)
-  generate_api_birthmark(module_2, k)
+  generate_api_set_birthmark(module_1, k)
+  generate_api_set_birthmark(module_2, k)
 
   module_1.save(force=True)
   module_2.save(force=True)
@@ -96,17 +102,8 @@ def analyse_api(db, module_1_id, module_2_id, k=2, algorithm='km', precision=100
   overall_similarity = 2 * sim_temp / (len(sim_matrix) + len(sim_matrix[0]))
 
   result = {
-    'module_1_id': module_1.id,
-    'module_2_id': module_2.id,
-    'params': {
-      'k': k,
-      'algorithm': algorithm,
-      'precision': precision
-    },
-    'details': {
-      'sim_matrix': sim_matrix,
-      'match': match,
-      'overall_similarity': overall_similarity
-    }
+    'sim_matrix': sim_matrix,
+    'match': match,
+    'overall_similarity': overall_similarity,
   }
   return result

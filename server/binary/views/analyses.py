@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from binary import tasks
 from binary.models import Module, ModuleObject, ModuleAnalysis
 from binary.serializers import ModuleAnalysisSerializer, ModuleAnalysisDetailsSerializer
-from binary.utils.helpers import normalize_api_result
+from binary.utils.result_normalizer import normalize_result
 
 class Analyses(ViewSet):
   """
@@ -70,12 +70,12 @@ class Analyses(ViewSet):
     data = ModuleAnalysisDetailsSerializer(qeuryset).data
 
     try:
-      if data['method'] == 'api_set':
-        data['data'] = normalize_api_result(data['data'])
+      data['result'] = normalize_result(analysis=data)
+
       return Response({
         'data': data,
       })
-    except Exception:
+    except Exception as e:
       return Response({
         'msg': 'failed to get the details of analysis #' + analysis_id,
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -6,7 +6,8 @@ from django.utils import timezone
 
 from binary.utils import db
 from binary.models import ModuleAnalysis
-from binary.core.analysis.api import analyse_api
+from binary.core.analysis.api_set import analyse_api_set
+from binary.core.analysis.k_gram import analyse_k_gram
 
 logger = logging.getLogger('binspdt.tasks')
 
@@ -17,10 +18,10 @@ def _start(id):
     analysis.save()
     logger.info('[task:run_analysis][id:{}] Analysis started'.format(id))
 
-def _finish(id, data):
+def _finish(id, result):
   analysis = ModuleAnalysis.objects.get(id=id)
   if analysis.finished_at == None:
-    analysis.data = data
+    analysis.result = result
     analysis.finished_at = timezone.now()
     analysis.save()
     logger.info('[task:run_analysis][id:{}] Analysis finished'.format(id))
@@ -39,13 +40,23 @@ def run_analysis(id):
 
     analysis = ModuleAnalysis.objects.get(id=id)
 
-    result = analyse_api(
-      db=db,
-      module_1_id=analysis.module_1_id,
-      module_2_id=analysis.module_2_id,
-      k=analysis.params['k'],
-      algorithm=analysis.params['algorithm'],
-    )
+    result = None
+
+    if analysis.method == 'api_set':
+      result = analyse_api(
+        db=db,
+        module_1_id=analysis.module_1_id,
+        module_2_id=analysis.module_2_id,
+        k=analysis.params['k'],
+        algorithm=analysis.params['algorithm'],
+      )
+    elif analysis.method == 'k_gram':
+      result = analyse_k_gram(
+        db=db,
+        module_1_id=analysis.module_1_id,
+        module_2_id=analysis.module_2_id,
+        k=analysis.params['k'],
+      )
 
     _finish(id, result)
 

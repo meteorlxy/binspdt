@@ -9,6 +9,12 @@
             API Set - Set of System API Calls in Functions
           </RouterLink>
         </li>
+
+        <li>
+          <RouterLink :to="{ name: 'dashboard.wiki.k-gram' }">
+            K-Gram - Set of Subsequence of Instruction Mnemonic
+          </RouterLink>
+        </li>
       </ul>
     </VCardText>
   </VCard>

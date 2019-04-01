@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('module_2_id', models.IntegerField()),
                 ('method', models.CharField(max_length=32)),
                 ('params', django.contrib.postgres.fields.jsonb.JSONField()),
-                ('data', django.contrib.postgres.fields.jsonb.JSONField(null=True)),
+                ('result', django.contrib.postgres.fields.jsonb.JSONField(null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('started_at', models.DateTimeField(null=True)),
                 ('finished_at', models.DateTimeField(null=True)),

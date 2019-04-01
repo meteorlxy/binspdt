@@ -26,6 +26,12 @@ export default {
         paramsComponent: () => import('@/views/dashboard/analyses/_components/api-set/APISetParams.vue'),
         resultComponent: () => import('@/views/dashboard/analyses/_components/api-set/APISetResult.vue'),
       },
+      {
+        name: 'k_gram',
+        text: 'K-Gram - Set of Subsequence of Instruction Mnemonic',
+        paramsComponent: () => import('@/views/dashboard/analyses/_components/k-gram/KGramParams.vue'),
+        resultComponent: () => import('@/views/dashboard/analyses/_components/k-gram/KGramResult.vue'),
+      },
     ],
 
     algorithms: [

@@ -1,8 +1,6 @@
-# binspdt
+# BinSPDT
 
-> BINary Software Plagiarism Detection Tool
-
-Still a work in progress
+> Binary Software Plagiarism Detection Tool
 
 ## Develop Guide
 
@@ -13,17 +11,17 @@ pipenv install
 npm run install
 ```
 
-### Config Django
+### Config Environment Variables
 
 ```sh
-cp server/binspdt/settings.sample.py server/binspdt/settings.py 
+cp .env.example .env
 ```
 
-Config `DATABASE` and `IDA` settings.
+Config database, IDA Pro and other settings in `.env` file.
 
 ### Run migration
 
-After config `DATABASE` correctly, migrate the database tables.
+After config PostgreSQL correctly, migrate the database tables.
 
 ```sh
 npm run migrate
@@ -50,4 +48,4 @@ You should have [IDA Pro](https://www.hex-rays.com/products/ida/) and correspond
 
 - IDA Pro 6.8 => binexport 8
 - IDA Pro 6.95 => binexport 9
-- IDA Pro 7.0 => binexport 10
+- IDA Pro 7.0+ => binexport 10

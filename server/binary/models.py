@@ -38,7 +38,7 @@ class ModuleAnalysis(models.Model):
   module_2_id = models.IntegerField()
   method = models.CharField(max_length=32)
   params = JSONField()
-  data = JSONField(null=True)
+  result = JSONField(null=True)
   created_at = models.DateTimeField(auto_now_add=True)
   started_at = models.DateTimeField(null=True)
   finished_at = models.DateTimeField(null=True)

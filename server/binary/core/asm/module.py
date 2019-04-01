@@ -201,6 +201,15 @@ class Module(object):
       self.has_loaded_callgraph = True
     return self
 
+  def load_control_flow_graph(self):
+    if not self.has_loaded_functions:
+      self.load_functions()
+    if not self.has_loaded_control_flow_graph:
+      for func in self.functions.values():
+        func.load_control_flow_graph()
+      self.has_loaded_control_flow_graph = True
+    return self
+
   def save(self, force=False):
     self._db.save_module(self.id, self, force=force)
     return self

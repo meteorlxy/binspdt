@@ -44,10 +44,6 @@
               <div class="headline">
                 Overall Similarity
               </div>
-
-              <div class="grey--text">
-                Match the most similar functions in two modules
-              </div>
             </VCardText>
           </VCard>
         </VFlex>
@@ -70,13 +66,13 @@
               <VSlider
                 :value="analysis['params']['k']"
                 readonly
-                :max="6"
-                :min="0"
+                :max="10"
+                :min="1"
                 :step="1"
-                label="Call Depth k"
+                label="Parameter k"
                 ticks="always"
                 thumb-label="always"
-                hint="Function call depth used in analysis. [default: 2]"
+                hint="Length of subsequence when generating k-grams. [default: 2]"
                 persistent-hint>
                 <template v-slot:append>
                   <span class="ml-2">
@@ -84,15 +80,6 @@
                   </span>
                 </template>
               </VSlider>
-            </VCardText>
-
-            <VCardText>
-              <VTextField
-                :value="algorithm.text"
-                readonly
-                label="Matching Algorithm"
-                hint="Matching algorithm used to match similar functions. [default: km]"
-                persistent-hint/>
             </VCardText>
           </VCard>
         </VFlex>
@@ -130,11 +117,11 @@
             <VCardTitle>
               <div>
                 <div class="headline">
-                  <slot>Matched Functions</slot>
+                  <slot>K-Grams</slot>
                 </div>
 
                 <div class="grey--text">
-                  List of functions similarity
+                  List of all k-grams in Module A and B
                 </div>
               </div>
             </VCardTitle>
@@ -145,49 +132,11 @@
               :loading="isLoading"
               :rows-per-page-items="[10, 20, 50, 100]">
               <template v-slot:items="props">
-                <tr @click="props.expanded = !props.expanded">
-                  <td>{{ $helpers.decToHex(props.item.module_1_function_address) }}</td>
-                  <td>{{ $helpers.decToHex(props.item.module_2_function_address) }}</td>
-                  <td>{{ $helpers.floatToPercent(props.item.similarity) }}</td>
+                <tr>
+                  <td>{{ props.item['k_gram'] }}</td>
+                  <td>{{ props.item['in_module_1'] }}</td>
+                  <td>{{ props.item['in_module_2'] }}</td>
                 </tr>
-              </template>
-
-              <template v-slot:expand="props">
-                <VLayout
-                  class="pa-3"
-                  row>
-                  <VFlex xs6>
-                    <VSubheader>
-                      API Calls in Module A Function
-                    </VSubheader>
-
-                    <VList dense>
-                      <VListTile
-                        v-for="(val, index) in props.item.module_1_function_api"
-                        :key="index">
-                        <VListTileTitle>
-                          {{ val }}
-                        </VListTileTitle>
-                      </VListTile>
-                    </VList>
-                  </VFlex>
-
-                  <VFlex xs6>
-                    <VSubheader>
-                      API Calls in Module B Function
-                    </VSubheader>
-
-                    <VList dense>
-                      <VListTile
-                        v-for="(val, index) in props.item.module_2_function_api"
-                        :key="index">
-                        <VListTileTitle>
-                          {{ val }}
-                        </VListTileTitle>
-                      </VListTile>
-                    </VList>
-                  </VFlex>
-                </VLayout>
               </template>
             </VDataTable>
           </VCard>
@@ -207,10 +156,9 @@ import { namespace } from 'vuex-class'
     ModuleDetailsCard,
   },
 })
-export default class APISetResult extends Vue {
+export default class KGramResult extends Vue {
   @namespace('binary/modules').Action('getModule') getModule
   @namespace('binary/analyses').State('methods') methods
-  @namespace('binary/analyses').State('algorithms') algorithms
 
   @Prop({
     type: Object,
@@ -228,12 +176,23 @@ export default class APISetResult extends Vue {
     return this.methods.find(item => item.name === this.analysis['method'])
   }
 
-  get algorithm () {
-    return this.algorithms.find(item => item.name === this.analysis['params']['algorithm'])
-  }
-
   get tableItems () {
-    return this.analysis['result']['matched_functions'].map((item, index) => ({
+    const intersection = this.analysis['result']['intersection'].map(item => ({
+      k_gram: item,
+      in_module_1: true,
+      in_module_2: true,
+    }))
+    const moduleADiff = this.analysis['result']['module_1_diff'].map(item => ({
+      k_gram: item,
+      in_module_1: true,
+      in_module_2: false,
+    }))
+    const moduleBDiff = this.analysis['result']['module_2_diff'].map(item => ({
+      k_gram: item,
+      in_module_1: false,
+      in_module_2: true,
+    }))
+    return intersection.concat(moduleADiff, moduleBDiff).map((item, index) => ({
       id: index,
       ...item,
     }))
@@ -242,16 +201,16 @@ export default class APISetResult extends Vue {
   get tableHeaders () {
     return [
       {
-        text: 'Module A Function Address',
-        value: 'module_1_function_address',
+        text: 'K-Gram',
+        value: 'k_gram',
       },
       {
-        text: 'Module B Function Address',
-        value: 'module_2_function_address',
+        text: 'Module A',
+        value: 'in_module_1',
       },
       {
-        text: 'Similarity',
-        value: 'similarity',
+        text: 'Module B',
+        value: 'in_module_2',
       },
     ]
   }

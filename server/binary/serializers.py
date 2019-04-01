@@ -85,6 +85,7 @@ class ModuleAnalysisSerializer(serializers.ModelSerializer):
     """
     available_methods = (
       'api_set',
+      'k_gram',
     )
 
     if data['method'] not in available_methods:
@@ -103,7 +104,7 @@ class ModuleAnalysisDetailsSerializer(serializers.Serializer):
   description = serializers.CharField()
   method = serializers.CharField()
   params = serializers.JSONField()
-  data = serializers.JSONField()
+  result = serializers.JSONField()
   module_1_id = serializers.IntegerField()
   module_2_id = serializers.IntegerField()
   created_at = serializers.DateTimeField()

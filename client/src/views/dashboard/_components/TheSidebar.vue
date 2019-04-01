@@ -87,6 +87,14 @@
             <VListTileTitle>API Set</VListTileTitle>
           </VListTileContent>
         </VListTile>
+
+        <VListTile
+          :to="{ name: 'dashboard.wiki.k-gram' }"
+          :exact="true">
+          <VListTileContent>
+            <VListTileTitle>K-Gram</VListTileTitle>
+          </VListTileContent>
+        </VListTile>
       </VListGroup>
     </VList>
   </VNavigationDrawer>
