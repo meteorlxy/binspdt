@@ -46,7 +46,8 @@ def normalize_k_gram_result(analysis):
 
   k = analysis['params']['k']
 
-  overall_similarity = analysis['result']['overall_similarity']
+  similarity_1_to_2 = analysis['result']['similarity_1_to_2']
+  similarity_2_to_1 = analysis['result']['similarity_2_to_1']
 
   module_1_k_gram_birthmark = module_1.k_gram_birthmark[k]
   module_2_k_gram_birthmark = module_2.k_gram_birthmark[k]
@@ -59,7 +60,10 @@ def normalize_k_gram_result(analysis):
     'intersection': list(intersection),
     'module_1_diff': list(module_1_diff),
     'module_2_diff': list(module_2_diff),
-    'overall_similarity': overall_similarity,
+    'module_1_count': len(module_1_k_gram_birthmark),
+    'module_2_count': len(module_2_k_gram_birthmark),
+    'similarity_1_to_2': similarity_1_to_2,
+    'similarity_2_to_1': similarity_2_to_1,
   }
   return result
 

@@ -194,7 +194,7 @@ class Modules(ViewSet):
     })
 
   def basic_block_instructions(self, request, module_id, function_address, basic_block_id, format='json'):
-    inst_list = db.get_basic_block_instructions(module_id=module_id, function_address=function_address, basic_block_id=basic_block_id)
+    inst_list = db.get_basic_block_instructions(module_id=module_id, basic_block_id=basic_block_id)
     asm_module = AsmModule(db, module_id)
     data = list()
     for inst in inst_list:

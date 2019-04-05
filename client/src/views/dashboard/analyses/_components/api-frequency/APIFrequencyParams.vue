@@ -43,7 +43,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 
 @Component
-export default class KGramParams extends Vue {
+export default class APIFrequencyParams extends Vue {
   @Prop({
     type: Object,
     required: false,

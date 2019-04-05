@@ -181,7 +181,7 @@ export default class ModulesUpload extends Vue {
 
   files: Array<UploadFile> = []
 
-  isBinaryFiles: Boolean = false
+  isBinaryFiles: Boolean = true
 
   idaVersion: String = '6.8'
 

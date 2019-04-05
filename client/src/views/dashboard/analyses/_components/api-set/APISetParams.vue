@@ -69,7 +69,7 @@ import { namespace } from 'vuex-class'
 
 @Component
 export default class APISetParams extends Vue {
-  @namespace('binary/analyses').State('algorithms') algorithms
+  @namespace('binary/analyses').State('functionMatchAlgorithms') algorithms
 
   @Prop({
     type: Object,

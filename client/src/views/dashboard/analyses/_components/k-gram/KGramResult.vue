@@ -34,15 +34,42 @@
                 :rotate="360"
                 :size="120"
                 :width="10"
-                :value="overallSimilarity * 100"
-                :color="overallSimilarity > 0.8 ? 'orange' : overallSimilarity > 0.4 ? 'blue' : 'teal'">
-                {{ $helpers.floatToPercent(overallSimilarity) }}
+                :value="similarityAToB * 100"
+                :color="similarityAToB > 0.8 ? 'orange' : similarityAToB > 0.4 ? 'blue' : 'teal'">
+                {{ $helpers.floatToPercent(similarityAToB) }}
               </VProgressCircular>
             </VCardText>
 
             <VCardText class="text-xs-center pb-4">
               <div class="headline">
-                Overall Similarity
+                Module A to B Similarity
+              </div>
+            </VCardText>
+
+            <VCardText class="text-xs-center">
+              <VProgressCircular
+                :rotate="360"
+                :size="120"
+                :width="10"
+                :value="similarityBToA * 100"
+                :color="similarityBToA > 0.8 ? 'orange' : similarityBToA > 0.4 ? 'blue' : 'teal'">
+                {{ $helpers.floatToPercent(similarityBToA) }}
+              </VProgressCircular>
+            </VCardText>
+
+            <VCardText class="text-xs-center pb-4">
+              <div class="headline">
+                Module B to A Similarity
+              </div>
+            </VCardText>
+
+            <VCardText class="text-xs-center pb-4">
+              <div class="grey--text">
+                Module A K-Grams: {{ analysis['result']['module_1_count'] }}
+              </div>
+
+              <div class="grey--text">
+                Module B K-Grams: {{ analysis['result']['module_2_count'] }}
               </div>
             </VCardText>
           </VCard>
@@ -72,7 +99,7 @@
                 label="Parameter k"
                 ticks="always"
                 thumb-label="always"
-                hint="Length of subsequence when generating k-grams. [default: 2]"
+                hint="Length of subsequence when generating k-grams. [default: 3]"
                 persistent-hint>
                 <template v-slot:append>
                   <span class="ml-2">
@@ -170,7 +197,8 @@ export default class KGramResult extends Vue {
   moduleA: any = {}
   moduleB: any = {}
 
-  overallSimilarity: number = 0
+  similarityAToB: number = 0
+  similarityBToA: number = 0
 
   get method () {
     return this.methods.find(item => item.name === this.analysis['method'])
@@ -221,7 +249,8 @@ export default class KGramResult extends Vue {
 
   mounted () {
     setTimeout(() => {
-      this.overallSimilarity = this.analysis['result']['overall_similarity']
+      this.similarityAToB = this.analysis['result']['similarity_1_to_2']
+      this.similarityBToA = this.analysis['result']['similarity_2_to_1']
     }, 500)
   }
 

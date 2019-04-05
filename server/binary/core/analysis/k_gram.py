@@ -25,11 +25,10 @@ def generate_k_gram_birthmark(module, k):
 
 def k_gram_similarity(birthmark_1, birthmark_2):
   intersection = set.intersection(birthmark_1, birthmark_2)
-  sim_1 = len(intersection) / len(birthmark_1)
-  sim_2 = len(intersection) / len(birthmark_2)
-  return max(sim_1, sim_2)
+  sim = len(intersection) / len(birthmark_2)
+  return sim
 
-def analyse_k_gram(db, module_1_id, module_2_id, k=2):
+def analyse_k_gram(db, module_1_id, module_2_id, k=3):
   print('Generating k-gram birthmark...')
   module_1 = Module(db=db, module_id=module_1_id).load().load_instructions()
   module_2 = Module(db=db, module_id=module_2_id).load().load_instructions()
@@ -41,10 +40,12 @@ def analyse_k_gram(db, module_1_id, module_2_id, k=2):
   module_2.save(force=True)
 
   print('Caculating k-gram birthmark similarity ...')
-  overall_similarity = k_gram_similarity(module_1.k_gram_birthmark[k], module_2.k_gram_birthmark[k])
+  similarity_1_to_2 = k_gram_similarity(module_1.k_gram_birthmark[k], module_2.k_gram_birthmark[k])
+  similarity_2_to_1 = k_gram_similarity(module_2.k_gram_birthmark[k], module_1.k_gram_birthmark[k])
 
   print('Generating result...')
   result = {
-    'overall_similarity': overall_similarity,
+    'similarity_1_to_2': similarity_1_to_2,
+    'similarity_2_to_1': similarity_2_to_1,
   }
   return result

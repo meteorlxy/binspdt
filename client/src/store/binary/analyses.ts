@@ -21,6 +21,12 @@ export default {
 
     methods: [
       {
+        name: 'read_write_sequence',
+        text: 'Read-Write Sequence - Sequence of Instructions Read-Write Operations',
+        paramsComponent: () => import('@/views/dashboard/analyses/_components/read-write-sequence/ReadWriteSequenceParams.vue'),
+        resultComponent: () => import('@/views/dashboard/analyses/_components/read-write-sequence/ReadWriteSequenceResult.vue'),
+      },
+      {
         name: 'api_set',
         text: 'API Set - Set of System API calls in Functions',
         paramsComponent: () => import('@/views/dashboard/analyses/_components/api-set/APISetParams.vue'),
@@ -32,9 +38,15 @@ export default {
         paramsComponent: () => import('@/views/dashboard/analyses/_components/k-gram/KGramParams.vue'),
         resultComponent: () => import('@/views/dashboard/analyses/_components/k-gram/KGramResult.vue'),
       },
+      {
+        name: 'api_frequency',
+        text: 'API Frequency - Vector of API calls Frequency',
+        paramsComponent: () => import('@/views/dashboard/analyses/_components/api-frequency/APIFrequencyParams.vue'),
+        resultComponent: () => import('@/views/dashboard/analyses/_components/api-frequency/APIFrequencyResult.vue'),
+      },
     ],
 
-    algorithms: [
+    functionMatchAlgorithms: [
       {
         name: 'km',
         text: 'Kuhn-Munkres Algorithm',

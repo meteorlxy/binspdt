@@ -43,7 +43,7 @@ def run_analysis(id):
     result = None
 
     if analysis.method == 'api_set':
-      result = analyse_api(
+      result = analyse_api_set(
         db=db,
         module_1_id=analysis.module_1_id,
         module_2_id=analysis.module_2_id,
