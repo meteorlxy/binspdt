@@ -3,7 +3,8 @@
     <VLayout
       class="py-2 px-3"
       row
-      wrap>
+      wrap
+    >
       <VFlex xs6>
         <VBtn
           color="grey"
@@ -12,7 +13,8 @@
           exact
           icon
           flat
-          :disabled="hasPending">
+          :disabled="hasPending"
+        >
           <VIcon>arrow_back</VIcon>
         </VBtn>
 
@@ -22,21 +24,24 @@
           flat
           icon
           :disabled="hasPending"
-          @click="files = []">
+          @click="files = []"
+        >
           <VIcon>refresh</VIcon>
         </VBtn>
       </VFlex>
 
       <VFlex
         class="text-xs-right"
-        xs6>
+        xs6
+      >
         <VBtn
           color="success"
           title="Start Upload"
           :icon="$vuetify.breakpoint.smAndDown"
           :loading="hasPending"
           :disabled="!hasPending && !hasUnstarted"
-          @click="handlePostModules">
+          @click="handlePostModules"
+        >
           <VIcon :left="!$vuetify.breakpoint.smAndDown">
             check
           </VIcon>
@@ -51,7 +56,8 @@
           title="Add Files"
           :icon="$vuetify.breakpoint.smAndDown"
           :disabled="hasPending"
-          @click="$refs.files.click()">
+          @click="$refs.files.click()"
+        >
           <VIcon :left="!$vuetify.breakpoint.smAndDown">
             note_add
           </VIcon>
@@ -67,21 +73,26 @@
           type="file"
           :accept="filesAccept"
           multiple
-          @change="addFiles">
+          @change="addFiles"
+        >
       </VFlex>
 
       <VFlex
         xs12
-        md6>
+        md6
+      >
         <VSelect
           v-model="idaVersion"
           class="mx-2 d-inline-block"
           label="IDA Pro Version"
-          :items="idaVersionItems"/>
+          :items="idaVersionItems"
+          :disabled="hasPending"
+        />
 
         <VTooltip
           v-show="!isBinaryFiles"
-          top>
+          top
+        >
           <template v-slot:activator>
             <VIcon style="cursor: pointer">
               help_outline
@@ -96,38 +107,70 @@
           v-model="selectedFilesType"
           class="mx-2 d-inline-block"
           label="Binary file arch."
-          :items="filesTypeItems"/>
+          :items="filesTypeItems"
+          :disabled="hasPending"
+        />
       </VFlex>
 
       <VFlex
         class="text-md-right"
         xs12
-        md6>
-        <VRadioGroup
-          v-model="isBinaryFiles"
-          class="d-inline-block"
-          row>
-          <VRadio
-            label="binary file"
-            :value="true"/>
-          <VRadio
-            label=".idb/.i64 file"
-            :value="false"/>
-        </VRadioGroup>
+        md6
+      >
+        <VLayout
+          row
+          wrap
+        >
+          <VFlex
+            xs12
+            md5
+          >
+            <VSwitch
+              v-model="parallel"
+              class="d-inline-block"
+              :label="'Parallel Upload'"
+              :disabled="hasPending"
+              title="Avoid using this with too many large files"
+            />
+          </VFlex>
+
+          <VFlex
+            xs12
+            md7
+          >
+            <VRadioGroup
+              v-model="isBinaryFiles"
+              :disabled="hasPending"
+              class="d-inline-block"
+              row
+            >
+              <VRadio
+                label="binary file"
+                :value="true"
+              />
+              <VRadio
+                label=".idb/.i64 file"
+                :value="false"
+              />
+            </VRadioGroup>
+          </VFlex>
+        </VLayout>
       </VFlex>
     </VLayout>
 
     <VDataTable
       :headers="tableHeaders"
       :items="tableItems"
-      hide-actions>
+      hide-actions
+    >
       <template v-slot:no-data>
         <div class="text-xs-center">
           <VBtn
             flat
             title="Add Files"
             :disabled="hasPending"
-            @click="$refs.files.click()">
+            @click="$refs.files.click()"
+          >
             Add files to upload
           </VBtn>
         </div>
@@ -143,7 +186,8 @@
         <td>
           <VProgressLinear
             :color="getFileStatus(props.item).color"
-            :value="props.item.percentage"/>
+            :value="props.item.percentage"
+          />
         </td>
 
         <td>
@@ -155,12 +199,14 @@
         <td>
           <VBtn
             class="ml-0"
-            :title="props.item.status === 2 ? 'Finish' : 'Remove this file'"
+            :title="getFileStatus(props.item).iconTitle"
             icon
             small
-            :disabled="props.item.status === 1"
-            @click="removeFile(props.index)">
-            <VIcon>{{ props.item.status === 2 ? 'check' : 'close' }}</VIcon>
+            :disabled="props.item.status === 1 || props.item.status === 2"
+            :loading="getFileStatus(props.item).icon === 'loading'"
+            @click="removeFile(props.index)"
+          >
+            <VIcon>{{ getFileStatus(props.item).icon }}</VIcon>
           </VBtn>
         </td>
       </template>
@@ -181,11 +227,13 @@ export default class ModulesUpload extends Vue {
 
   files: Array<UploadFile> = []
 
-  isBinaryFiles: Boolean = true
+  parallel: boolean = false
 
-  idaVersion: String = '6.8'
+  isBinaryFiles: boolean = true
 
-  selectedFilesType: String = 'x86_32'
+  idaVersion: string = '6.8'
+
+  selectedFilesType: string = 'x86_32'
 
   get idaVersionItems () {
     return [
@@ -281,26 +329,43 @@ export default class ModulesUpload extends Vue {
       return {
         color: 'red',
         text: 'Error',
+        icon: 'close',
+        iconTitle: 'Remove this file',
       }
     } else if (uploadFile.status === 0) {
       return {
         color: 'grey',
         text: 'Wait',
+        icon: 'close',
+        iconTitle: 'Remove this file',
       }
-    } else if (uploadFile.status === 1 && uploadFile.percentage !== 100) {
+    } else if (uploadFile.status === 1) {
       return {
         color: 'blue',
-        text: 'Uploading',
+        text: 'Pending',
+        icon: 'alarm',
+        iconTitle: 'Wait for uploading',
       }
-    } else if (uploadFile.status === 1 && uploadFile.percentage === 100) {
+    } else if (uploadFile.status === 2 && uploadFile.percentage !== 100) {
+      return {
+        color: 'orange',
+        text: 'Uploading',
+        icon: 'loading',
+        iconTitle: 'File uploading',
+      }
+    } else if (uploadFile.status === 2 && uploadFile.percentage === 100) {
       return {
         color: 'purple',
         text: 'Importing',
+        icon: 'loading',
+        iconTitle: 'File importing',
       }
     } else {
       return {
         color: 'green',
         text: 'Success',
+        icon: 'check',
+        iconTitle: 'Finish',
       }
     }
   }
@@ -320,40 +385,60 @@ export default class ModulesUpload extends Vue {
           continue
         }
 
-        // Set the status to 'uploading', and reset the percentage for those files with errors
+        // Set the status to 'waiting', and reset the percentage for those files with errors
         file.status = 1
         file.percentage = 0
 
         // Create the post file promise
-        const postPromise = this.postModules({
-          files: [file.file],
-          filesType: this.filesType,
-          version: this.idaVersion,
-          onUploadProgress: (progress) => {
-            // Watch the upload progress
-            file.percentage = Math.floor((progress.loaded * 100) / progress.total)
-          },
-        }).then(res => {
-          // Set the status to 'success' when uploaded
+        const postPromise = async () => {
+          // Set the status to 'uploading'
           file.status = 2
-          return res
-        }).catch(err => {
-          // Set the status to 'error' when failed
-          file.status = -1
-          throw err
-        })
+
+          await this.postModules({
+            files: [file.file],
+            filesType: this.filesType,
+            version: this.idaVersion,
+            onUploadProgress: (progress) => {
+              // Watch the upload progress
+              file.percentage = Math.floor((progress.loaded * 100) / progress.total)
+            },
+          }).then(res => {
+            // Set the status to 'success' when uploaded
+            file.status = 3
+            return res
+          }).catch(err => {
+            // Set the status to 'error' when failed
+            file.status = -1
+            throw err
+          })
+        }
         postPromiseAll.push(postPromise)
       }
 
-      // Promise.all the upload process
-      await Promise.all(postPromiseAll)
+      let uploadError = false
+      // Upload parallel or not
+      if (this.parallel) {
+        // Promise.all the upload process
+        await Promise.all(postPromiseAll.map(i => i()))
+      } else {
+        for (const postPromise of postPromiseAll) {
+          try {
+            await postPromise()
+          } catch (error) {
+            uploadError = true
+            requestCatch(error)
+          }
+        }
+      }
 
-      // Show the notice
-      this.$notify({
-        type: 'success',
-        title: 'Success',
-        text: `Upload successfully.`,
-      })
+      // Show the success notice
+      if (!uploadError) {
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: `Upload successfully.`,
+        })
+      }
     } catch (error) {
       requestCatch(error)
     }

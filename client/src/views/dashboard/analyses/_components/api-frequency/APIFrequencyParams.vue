@@ -1,38 +1,11 @@
 <template>
   <VLayout
     row
-    wrap>
+    wrap
+  >
     <VFlex xs12>
-      <VCardText class="mt-3 pl-0">
-        <VSlider
-          v-model="params.k"
-          :max="10"
-          :min="1"
-          :step="1"
-          label="Parameter k"
-          ticks="always"
-          thumb-label="always"
-          hint="Length of subsequence when generating k-grams. [default: 3]"
-          persistent-hint>
-          <template v-slot:prepend>
-            <VBtn
-              :to="{ name: 'dashboard.wiki.k-gram' }"
-              target="_blank"
-              icon
-              flat>
-              <VIcon>
-                help_outline
-              </VIcon>
-            </VBtn>
-          </template>
-
-          <template v-slot:append>
-            <span
-              class="ml-2">
-              {{ params.k }}
-            </span>
-          </template>
-        </VSlider>
+      <VCardText>
+        No parameters available for this method.
       </VCardText>
     </VFlex>
   </VLayout>
@@ -43,10 +16,10 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 
 @Component
-export default class APIFrequencyParams extends Vue {
+export default class KGramParams extends Vue {
   @Prop({
     type: Object,
-    required: false,
+    required: true,
   }) value!: any
 
   @Prop({
@@ -54,8 +27,13 @@ export default class APIFrequencyParams extends Vue {
     default: true,
   }) isValid!: boolean
 
+  @Prop({
+    type: Boolean,
+    required: false,
+    default: false,
+  }) readonly!: boolean
+
   internalParams = {
-    k: 3,
   }
 
   internalIsValid = true
@@ -65,14 +43,18 @@ export default class APIFrequencyParams extends Vue {
   }
 
   set params (params) {
-    this.internalIsValid = Number.isInteger(params.k) && params.k >= 1 && params.k <= 10
+    this.internalIsValid = Object.keys(params).length === 0
     this.internalParams = params
     this.$emit('input', params)
+    this.$emit('update:isValid', this.internalIsValid)
   }
 
   created () {
-    this.params = this.internalParams
-    this.$emit('update:isValid', this.internalIsValid)
+    if (Object.keys(this.value).length === 0) {
+      this.params = this.value
+    } else {
+      this.params = this.internalParams
+    }
   }
 }
 </script>

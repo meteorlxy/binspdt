@@ -2,24 +2,28 @@
   <VContent>
     <VContainer
       fluid
-      fill-height>
+      fill-height
+    >
       <VLayout
         align-center
-        justify-center>
+        justify-center
+      >
         <VFlex
           xs12
           sm8
           md6
-          lg4>
+          lg4
+        >
           <VCard class="elevation-12">
             <VToolbar
               flat
-              color="white">
+              color="white"
+            >
               <VToolbarTitle>
                 Login to BinSPDT
               </VToolbarTitle>
 
-              <VSpacer/>
+              <VSpacer />
             </VToolbar>
 
             <VCardText>
@@ -32,7 +36,8 @@
                   label="Username"
                   prepend-icon="person"
                   :error-messages="errors.collect('username')"
-                  @keyup.enter="handleLogin"/>
+                  @keyup.enter="handleLogin"
+                />
 
                 <VTextField
                   v-model="loginForm.password"
@@ -44,7 +49,8 @@
                   :append-icon="showPassword ? 'visibility_off' : 'visibility'"
                   :error-messages="errors.collect('password')"
                   @click:append="showPassword = !showPassword"
-                  @keyup.enter="handleLogin"/>
+                  @keyup.enter="handleLogin"
+                />
               </VForm>
             </VCardText>
 
@@ -52,24 +58,27 @@
               <VBtn
                 :to="{ name: 'register' }"
                 flat
-                small>
+                small
+              >
                 <VIcon
                   class="mr-1"
                   left
-                  small>
+                  small
+                >
                   person_add
                 </VIcon>
 
                 <span>Regiter a new account</span>
               </VBtn>
 
-              <VSpacer/>
+              <VSpacer />
 
               <VBtn
                 color="primary"
                 :disabled="isLoading || !isFormValid"
                 :loading="isLoading"
-                @click="handleLogin">
+                @click="handleLogin"
+              >
                 <span>Login</span>
               </VBtn>
             </VCardActions>
@@ -112,9 +121,13 @@ export default class Login extends Vue {
     try {
       this.isLoading = true
       await this.login(this.loginForm)
+      const queryRedirect = this.$route.query.redirect
+      const redirect = Array.isArray(queryRedirect)
+        ? queryRedirect[0]
+        : queryRedirect
 
       this.$router.push({
-        path: <string> this.$route.query.redirect || '/',
+        path: redirect || '/',
       }, () => {
         this.$notify({
           type: 'success',

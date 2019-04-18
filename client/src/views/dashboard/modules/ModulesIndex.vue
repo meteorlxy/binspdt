@@ -2,18 +2,20 @@
   <VCard>
     <VToolbar
       color="white"
-      flat>
+      flat
+    >
       <VToolbarTitle>
         <span>List of Modules</span>
       </VToolbarTitle>
 
-      <VSpacer/>
+      <VSpacer />
 
       <VBtn
         color="primary"
         title="Upload New Modules"
         :to="{ name: 'dashboard.modules.upload' }"
-        :icon="$vuetify.breakpoint.smAndDown">
+        :icon="$vuetify.breakpoint.smAndDown"
+      >
         <VIcon :left="!$vuetify.breakpoint.smAndDown">
           backup
         </VIcon>
@@ -26,20 +28,23 @@
 
     <VToolbar
       color="white"
-      flat>
+      flat
+    >
       <VBtn
         color="grey"
         title="Refresh"
         flat
         icon
         :loading="isLoading"
-        @click="handleRefresh">
+        @click="handleRefresh"
+      >
         <VIcon>refresh</VIcon>
       </VBtn>
 
       <VMenu
         offset-y
-        :disabled="tableSelected.length === 0 || isLoading">
+        :disabled="tableSelected.length === 0 || isLoading"
+      >
         <template v-slot:activator>
           <VBtn
             color="indigo"
@@ -47,7 +52,8 @@
             flat
             round
             :icon="$vuetify.breakpoint.smAndDown"
-            :disabled="tableSelected.length === 0 || isLoading">
+            :disabled="tableSelected.length === 0 || isLoading"
+          >
             <VIcon :left="!$vuetify.breakpoint.smAndDown">
               check_box
             </VIcon>
@@ -71,7 +77,7 @@
         </VList>
       </VMenu>
 
-      <VSpacer/>
+      <VSpacer />
 
       <VTextField
         v-model="search"
@@ -84,7 +90,8 @@
         hide-details
         :disabled="isLoading"
         @click:append="handleGetModules"
-        @keydown.enter="handleGetModules"/>
+        @keydown.enter="handleGetModules"
+      />
     </VToolbar>
 
     <VDataTable
@@ -94,14 +101,16 @@
       :total-items="tableItemsTotal"
       :loading="isLoading"
       :pagination.sync="tablePagination"
-      :rows-per-page-items="[10, 25, 50]"
-      select-all>
+      :rows-per-page-items="[10, 25, 50, 100, 200]"
+      select-all
+    >
       <template v-slot:items="props">
         <td>
           <VCheckbox
             v-model="props.selected"
             primary
-            hide-details/>
+            hide-details
+          />
         </td>
 
         <td>{{ props.item.id }}</td>
@@ -127,7 +136,8 @@
             small
             color="primary"
             title="Inpect this module"
-            :to="{ name: 'dashboard.modules.details', params: { id: props.item.id } }">
+            :to="{ name: 'dashboard.modules.details', params: { id: props.item.id } }"
+          >
             <VIcon>search</VIcon>
           </VBtn>
 
@@ -137,7 +147,8 @@
             small
             color="error"
             title="Remove this module"
-            @click="handleDeleteModule(props.item.id)">
+            @click="handleDeleteModule(props.item.id)"
+          >
             <VIcon>delete_outline</VIcon>
           </VBtn>
         </td>

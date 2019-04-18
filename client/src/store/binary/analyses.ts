@@ -21,10 +21,10 @@ export default {
 
     methods: [
       {
-        name: 'read_write_sequence',
-        text: 'Read-Write Sequence - Sequence of Instructions Read-Write Operations',
-        paramsComponent: () => import('@/views/dashboard/analyses/_components/read-write-sequence/ReadWriteSequenceParams.vue'),
-        resultComponent: () => import('@/views/dashboard/analyses/_components/read-write-sequence/ReadWriteSequenceResult.vue'),
+        name: 'key_read_write',
+        text: 'Key Read-Write - Sequence and Vector of Key Read-Write Operations',
+        paramsComponent: () => import('@/views/dashboard/analyses/_components/key-read-write/KeyReadWriteParams.vue'),
+        resultComponent: () => import('@/views/dashboard/analyses/_components/key-read-write/KeyReadWriteResult.vue'),
       },
       {
         name: 'api_set',
@@ -49,7 +49,7 @@ export default {
     functionMatchAlgorithms: [
       {
         name: 'km',
-        text: 'Kuhn-Munkres Algorithm',
+        text: 'Kuhn-Munkres Algorithm (km)',
       },
     ],
   },

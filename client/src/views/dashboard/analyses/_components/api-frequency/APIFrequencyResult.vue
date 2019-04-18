@@ -1,13 +1,16 @@
 <template>
   <VLayout
     row
-    wrap>
+    wrap
+  >
     <VFlex
       xs12
-      md4>
+      md4
+    >
       <VLayout
         column
-        wrap>
+        wrap
+      >
         <VFlex>
           <VCard>
             <VCardTitle>
@@ -17,59 +20,31 @@
                 :to="{ name: 'dashboard.analyses' }"
                 exact
                 icon
-                flat>
+                flat
+              >
                 <VIcon>arrow_back</VIcon>
               </VBtn>
 
-              <VSpacer/>
+              <VSpacer />
 
               <VProgressCircular
                 v-show="isLoading"
                 color="primary"
-                indeterminate/>
+                indeterminate
+              />
             </VCardTitle>
 
             <VCardText class="text-xs-center">
-              <VProgressCircular
-                :rotate="360"
-                :size="120"
-                :width="10"
-                :value="similarityAToB * 100"
-                :color="similarityAToB > 0.8 ? 'orange' : similarityAToB > 0.4 ? 'blue' : 'teal'">
-                {{ $helpers.floatToPercent(similarityAToB) }}
-              </VProgressCircular>
+              <SimilarityCircular :value="overallSimilarity" />
             </VCardText>
 
             <VCardText class="text-xs-center pb-4">
               <div class="headline">
-                Module A to B Similarity
-              </div>
-            </VCardText>
-
-            <VCardText class="text-xs-center">
-              <VProgressCircular
-                :rotate="360"
-                :size="120"
-                :width="10"
-                :value="similarityBToA * 100"
-                :color="similarityBToA > 0.8 ? 'orange' : similarityBToA > 0.4 ? 'blue' : 'teal'">
-                {{ $helpers.floatToPercent(similarityBToA) }}
-              </VProgressCircular>
-            </VCardText>
-
-            <VCardText class="text-xs-center pb-4">
-              <div class="headline">
-                Module B to A Similarity
-              </div>
-            </VCardText>
-
-            <VCardText class="text-xs-center pb-4">
-              <div class="grey--text">
-                Module A K-Grams: {{ analysis['result']['module_1_count'] }}
+                Overall Similarity
               </div>
 
               <div class="grey--text">
-                Module B K-Grams: {{ analysis['result']['module_2_count'] }}
+                Similarity of the API Frequency birthmark
               </div>
             </VCardText>
           </VCard>
@@ -89,25 +64,10 @@
               </div>
             </VCardTitle>
 
-            <VCardText class="mt-3">
-              <VSlider
-                :value="analysis['params']['k']"
-                readonly
-                :max="10"
-                :min="1"
-                :step="1"
-                label="Parameter k"
-                ticks="always"
-                thumb-label="always"
-                hint="Length of subsequence when generating k-grams. [default: 3]"
-                persistent-hint>
-                <template v-slot:append>
-                  <span class="ml-2">
-                    {{ analysis['params']['k'] }}
-                  </span>
-                </template>
-              </VSlider>
-            </VCardText>
+            <APIFrequencyParams
+              :value="analysis['params']"
+              readonly
+            />
           </VCard>
         </VFlex>
       </VLayout>
@@ -115,26 +75,32 @@
 
     <VFlex
       xs12
-      md8>
+      md8
+    >
       <VLayout
         row
-        wrap>
+        wrap
+      >
         <VFlex
           xs12
-          md6>
+          md6
+        >
           <ModuleDetailsCard
             :data="moduleA"
-            :fields-hide="['comment', 'exporter', 'import_time']">
+            :fields-hide="['comment', 'exporter', 'import_time']"
+          >
             Module A
           </ModuleDetailsCard>
         </VFlex>
 
         <VFlex
           xs12
-          md6>
+          md6
+        >
           <ModuleDetailsCard
             :data="moduleB"
-            :fields-hide="['comment', 'exporter', 'import_time']">
+            :fields-hide="['comment', 'exporter', 'import_time']"
+          >
             Module B
           </ModuleDetailsCard>
         </VFlex>
@@ -144,11 +110,11 @@
             <VCardTitle>
               <div>
                 <div class="headline">
-                  <slot>K-Grams</slot>
+                  <slot>Matched Functions</slot>
                 </div>
 
                 <div class="grey--text">
-                  List of all k-grams in Module A and B
+                  List of functions similarity
                 </div>
               </div>
             </VCardTitle>
@@ -157,12 +123,13 @@
               :headers="tableHeaders"
               :items="tableItems"
               :loading="isLoading"
-              :rows-per-page-items="[10, 20, 50, 100]">
+              :rows-per-page-items="[10, 20, 50, 100]"
+            >
               <template v-slot:items="props">
                 <tr>
-                  <td>{{ props.item['k_gram'] }}</td>
-                  <td>{{ props.item['in_module_1'] }}</td>
-                  <td>{{ props.item['in_module_2'] }}</td>
+                  <td>{{ props.item.api }}</td>
+                  <td>{{ props.item.module_1_frequency }}</td>
+                  <td>{{ props.item.module_2_frequency }}</td>
                 </tr>
               </template>
             </VDataTable>
@@ -175,17 +142,22 @@
 
 <script lang="ts">
 import ModuleDetailsCard from '@/components/dashboard/ModuleDetailsCard.vue'
+import SimilarityCircular from '../SimilarityCircular.vue'
+import APIFrequencyParams from './APIFrequencyParams.vue'
 import { Component, Vue, Prop } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 
 @Component({
   components: {
     ModuleDetailsCard,
+    SimilarityCircular,
+    APIFrequencyParams,
   },
 })
 export default class APIFrequencyResult extends Vue {
   @namespace('binary/modules').Action('getModule') getModule
   @namespace('binary/analyses').State('methods') methods
+  @namespace('binary/analyses').State('functionMatchAlgorithms') algorithms
 
   @Prop({
     type: Object,
@@ -197,48 +169,47 @@ export default class APIFrequencyResult extends Vue {
   moduleA: any = {}
   moduleB: any = {}
 
-  similarityAToB: number = 0
-  similarityBToA: number = 0
+  overallSimilarity: number = 0
 
   get method () {
     return this.methods.find(item => item.name === this.analysis['method'])
   }
 
+  get algorithm () {
+    return this.algorithms.find(item => item.name === this.analysis['params']['algorithm'])
+  }
+
+  get moduleABirthmark () {
+    return this.analysis['result']['module_1_birthmark']
+  }
+
+  get moduleBBirthmark () {
+    return this.analysis['result']['module_2_birthmark']
+  }
+
   get tableItems () {
-    const intersection = this.analysis['result']['intersection'].map(item => ({
-      k_gram: item,
-      in_module_1: true,
-      in_module_2: true,
-    }))
-    const moduleADiff = this.analysis['result']['module_1_diff'].map(item => ({
-      k_gram: item,
-      in_module_1: true,
-      in_module_2: false,
-    }))
-    const moduleBDiff = this.analysis['result']['module_2_diff'].map(item => ({
-      k_gram: item,
-      in_module_1: false,
-      in_module_2: true,
-    }))
-    return intersection.concat(moduleADiff, moduleBDiff).map((item, index) => ({
+    const union = Array.from(new Set(Object.keys(this.moduleABirthmark).concat(Object.keys(this.moduleBBirthmark))))
+    return union.map((item, index) => ({
       id: index,
-      ...item,
+      'api': item,
+      'module_1_frequency': item in this.moduleABirthmark ? this.moduleABirthmark[item] : 0,
+      'module_2_frequency': item in this.moduleBBirthmark ? this.moduleBBirthmark[item] : 0,
     }))
   }
 
   get tableHeaders () {
     return [
       {
-        text: 'K-Gram',
-        value: 'k_gram',
+        text: 'API',
+        value: 'api',
       },
       {
-        text: 'Module A',
-        value: 'in_module_1',
+        text: 'Module A Frequency',
+        value: 'module_1_frequency',
       },
       {
-        text: 'Module B',
-        value: 'in_module_2',
+        text: 'Module B Frequency',
+        value: 'module_2_frequency',
       },
     ]
   }
@@ -249,8 +220,7 @@ export default class APIFrequencyResult extends Vue {
 
   mounted () {
     setTimeout(() => {
-      this.similarityAToB = this.analysis['result']['similarity_1_to_2']
-      this.similarityBToA = this.analysis['result']['similarity_2_to_1']
+      this.overallSimilarity = this.analysis['result']['overall_similarity']
     }, 500)
   }
 

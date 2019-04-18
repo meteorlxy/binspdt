@@ -1,11 +1,13 @@
 <template>
   <VLayout
     row
-    wrap>
+    wrap
+  >
     <VFlex xs12>
-      <VCardText class="mt-3 pl-0">
+      <VCardText class="mt-3">
         <VSlider
           v-model="params.k"
+          :readonly="readonly"
           :max="10"
           :min="1"
           :step="1"
@@ -13,22 +15,12 @@
           ticks="always"
           thumb-label="always"
           hint="Length of subsequence when generating k-grams. [default: 3]"
-          persistent-hint>
-          <template v-slot:prepend>
-            <VBtn
-              :to="{ name: 'dashboard.wiki.k-gram' }"
-              target="_blank"
-              icon
-              flat>
-              <VIcon>
-                help_outline
-              </VIcon>
-            </VBtn>
-          </template>
-
+          persistent-hint
+        >
           <template v-slot:append>
             <span
-              class="ml-2">
+              class="ml-2"
+            >
               {{ params.k }}
             </span>
           </template>
@@ -46,7 +38,7 @@ import { namespace } from 'vuex-class'
 export default class KGramParams extends Vue {
   @Prop({
     type: Object,
-    required: false,
+    required: true,
   }) value!: any
 
   @Prop({
@@ -54,8 +46,14 @@ export default class KGramParams extends Vue {
     default: true,
   }) isValid!: boolean
 
+  @Prop({
+    type: Boolean,
+    required: false,
+    default: false,
+  }) readonly!: boolean
+
   internalParams = {
-    k: 3,
+    'k': 3,
   }
 
   internalIsValid = true
@@ -65,14 +63,18 @@ export default class KGramParams extends Vue {
   }
 
   set params (params) {
-    this.internalIsValid = Number.isInteger(params.k) && params.k >= 1 && params.k <= 10
+    this.internalIsValid = Number.isInteger(params['k']) && params['k'] >= 1 && params['k'] <= 10
     this.internalParams = params
     this.$emit('input', params)
+    this.$emit('update:isValid', this.internalIsValid)
   }
 
   created () {
-    this.params = this.internalParams
-    this.$emit('update:isValid', this.internalIsValid)
+    if ('k' in this.value) {
+      this.params = this.value
+    } else {
+      this.params = this.internalParams
+    }
   }
 }
 </script>

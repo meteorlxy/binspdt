@@ -79,16 +79,17 @@ class Module(object):
             function_dict=result,
           )
         func = self.functions[result['address']]
-        if result['bb_id'] not in func.basic_blocks:
-          bb_dict = dict()
-          bb_dict['id'] = result['bb_id']
-          bb_dict['address'] = result['bb_address']
-          bb_dict['parent_function'] = result['bb_parent_function']
-          func.basic_blocks[result['bb_id']] = BasicBlock(
-            parent_module=self,
-            basic_block_dict=bb_dict
-          )
-          func.has_loaded_basic_blocks = True
+        if result['bb_id'] != None:
+          if result['bb_id'] not in func.basic_blocks:
+            bb_dict = dict()
+            bb_dict['id'] = result['bb_id']
+            bb_dict['address'] = result['bb_address']
+            bb_dict['parent_function'] = result['bb_parent_function']
+            func.basic_blocks[result['bb_id']] = BasicBlock(
+              parent_module=self,
+              basic_block_dict=bb_dict
+            )
+            func.has_loaded_basic_blocks = True
       self.has_loaded_functions = True
       self.has_loaded_basic_blocks = True
     return self
@@ -103,27 +104,29 @@ class Module(object):
             function_dict=result,
           )
         func = self.functions[result['address']]
-        if result['bb_id'] not in func.basic_blocks:
-          bb_dict = dict()
-          bb_dict['id'] = result['bb_id']
-          bb_dict['address'] = result['bb_address']
-          bb_dict['parent_function'] = result['bb_parent_function']
-          func.basic_blocks[result['bb_id']] = BasicBlock(
-            parent_module=self,
-            basic_block_dict=bb_dict
-          )
-          func.has_loaded_basic_blocks = True
-          func.has_loaded_instructions = True
-        bb = func.basic_blocks[result['bb_id']]
-        if result['inst_address'] not in bb.instructions:
-          inst_dict = dict()
-          inst_dict['address'] = result['inst_address']
-          inst_dict['mnemonic'] = result['inst_mnemonic']
-          bb.instructions[result['inst_address']] = Instruction(
-            parent_module=self,
-            instruction_dict=inst_dict
-          )
-          bb.has_loaded_instructions = True
+        if result['bb_id'] != None:
+          if result['bb_id'] not in func.basic_blocks:
+            bb_dict = dict()
+            bb_dict['id'] = result['bb_id']
+            bb_dict['address'] = result['bb_address']
+            bb_dict['parent_function'] = result['bb_parent_function']
+            func.basic_blocks[result['bb_id']] = BasicBlock(
+              parent_module=self,
+              basic_block_dict=bb_dict
+            )
+            func.has_loaded_basic_blocks = True
+            func.has_loaded_instructions = True
+          bb = func.basic_blocks[result['bb_id']]
+          if result['inst_address'] != None:
+            if result['inst_address'] not in bb.instructions:
+              inst_dict = dict()
+              inst_dict['address'] = result['inst_address']
+              inst_dict['mnemonic'] = result['inst_mnemonic']
+              bb.instructions[result['inst_address']] = Instruction(
+                parent_module=self,
+                instruction_dict=inst_dict
+              )
+              bb.has_loaded_instructions = True
       self.has_loaded_functions = True
       self.has_loaded_basic_blocks = True
       self.has_loaded_instructions = True
@@ -141,40 +144,43 @@ class Module(object):
             function_dict=result,
           )
         func = self.functions[result['address']]
-        if result['bb_id'] not in func.basic_blocks:
-          bb_dict = dict()
-          bb_dict['id'] = result['bb_id']
-          bb_dict['address'] = result['bb_address']
-          bb_dict['parent_function'] = result['bb_parent_function']
-          func.basic_blocks[result['bb_id']] = BasicBlock(
-            parent_module=self,
-            basic_block_dict=bb_dict
-          )
-          func.has_loaded_basic_blocks = True
-          func.has_loaded_instructions = True
-          func.has_loaded_operands = True
-        bb = func.basic_blocks[result['bb_id']]
-        if result['inst_address'] not in bb.instructions:
-          inst_dict = dict()
-          inst_dict['address'] = result['inst_address']
-          inst_dict['mnemonic'] = result['inst_mnemonic']
-          bb.instructions[result['inst_address']] = Instruction(
-            parent_module=self,
-            instruction_dict=inst_dict
-          )
-          bb.has_loaded_instructions = True
-          bb.has_loaded_operands = True
-        inst = bb.instructions[result['inst_address']]
-        if result['op_position'] not in inst.operands:
-          op_dict = dict()
-          op_dict['address'] = result['op_address']
-          op_dict['expression_tree_id'] = result['op_expression_tree_id']
-          op_dict['position'] = result['op_position']
-          inst.operands[result['op_position']] = Operand(
-            parent_module=self,
-            operand_dict=op_dict
-          )
-          inst.has_loaded_operands = True
+        if result['bb_id'] != None:
+          if result['bb_id'] not in func.basic_blocks:
+            bb_dict = dict()
+            bb_dict['id'] = result['bb_id']
+            bb_dict['address'] = result['bb_address']
+            bb_dict['parent_function'] = result['bb_parent_function']
+            func.basic_blocks[result['bb_id']] = BasicBlock(
+              parent_module=self,
+              basic_block_dict=bb_dict
+            )
+            func.has_loaded_basic_blocks = True
+            func.has_loaded_instructions = True
+            func.has_loaded_operands = True
+          bb = func.basic_blocks[result['bb_id']]
+          if result['inst_address'] != None:
+            if result['inst_address'] not in bb.instructions:
+              inst_dict = dict()
+              inst_dict['address'] = result['inst_address']
+              inst_dict['mnemonic'] = result['inst_mnemonic']
+              bb.instructions[result['inst_address']] = Instruction(
+                parent_module=self,
+                instruction_dict=inst_dict
+              )
+              bb.has_loaded_instructions = True
+              bb.has_loaded_operands = True
+            inst = bb.instructions[result['inst_address']]
+            if result['op_position'] != None:
+              if result['op_position'] not in inst.operands:
+                op_dict = dict()
+                op_dict['address'] = result['op_address']
+                op_dict['expression_tree_id'] = result['op_expression_tree_id']
+                op_dict['position'] = result['op_position']
+                inst.operands[result['op_position']] = Operand(
+                  parent_module=self,
+                  operand_dict=op_dict
+                )
+                inst.has_loaded_operands = True
       self.has_loaded_functions = True
       self.has_loaded_basic_blocks = True
       self.has_loaded_instructions = True

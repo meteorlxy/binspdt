@@ -52,8 +52,13 @@ export default [
   },
 
   {
-    name: 'details.functions_count',
-    text: 'Functions Count',
+    name: 'details.module_functions_count',
+    text: 'Module Functions Count',
+  },
+
+  {
+    name: 'details.external_functions_count',
+    text: 'External Functions Count',
   },
 
   {

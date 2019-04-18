@@ -1,16 +1,15 @@
 import re
 import numpy as np
 from ..asm import Module
-from ..algorithms import KM
 
 def get_k_gram(seq, k):
   k_grams = set()
   if len(seq) >= k:
-    for i in range(len(seq) - k):
+    for i in range(len(seq) - k + 1):
       k_grams.add(seq[i:i + k])
   return k_grams
 
-def generate_k_gram_birthmark(module, k):
+def generate_birthmark(module, k):
   if not hasattr(module, 'k_gram_birthmark'):
     module.k_gram_birthmark = dict()
   if k not in module.k_gram_birthmark:
@@ -28,22 +27,22 @@ def k_gram_similarity(birthmark_1, birthmark_2):
   sim = len(intersection) / len(birthmark_2)
   return sim
 
-def analyse_k_gram(db, module_1_id, module_2_id, k=3):
-  print('Generating k-gram birthmark...')
+def analyse(db, module_1_id, module_2_id, k=3):
+  # Generate K-Gram birthmark
   module_1 = Module(db=db, module_id=module_1_id).load().load_instructions()
   module_2 = Module(db=db, module_id=module_2_id).load().load_instructions()
 
-  generate_k_gram_birthmark(module_1, k)
-  generate_k_gram_birthmark(module_2, k)
+  generate_birthmark(module_1, k)
+  generate_birthmark(module_2, k)
 
   module_1.save(force=True)
   module_2.save(force=True)
 
-  print('Caculating k-gram birthmark similarity ...')
+  # Caculate K-Gram birthmark similarity
   similarity_1_to_2 = k_gram_similarity(module_1.k_gram_birthmark[k], module_2.k_gram_birthmark[k])
   similarity_2_to_1 = k_gram_similarity(module_2.k_gram_birthmark[k], module_1.k_gram_birthmark[k])
 
-  print('Generating result...')
+  # Generate result
   result = {
     'similarity_1_to_2': similarity_1_to_2,
     'similarity_2_to_1': similarity_2_to_1,

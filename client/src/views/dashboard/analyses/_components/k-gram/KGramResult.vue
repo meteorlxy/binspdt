@@ -1,13 +1,16 @@
 <template>
   <VLayout
     row
-    wrap>
+    wrap
+  >
     <VFlex
       xs12
-      md4>
+      md4
+    >
       <VLayout
         column
-        wrap>
+        wrap
+      >
         <VFlex>
           <VCard>
             <VCardTitle>
@@ -17,27 +20,22 @@
                 :to="{ name: 'dashboard.analyses' }"
                 exact
                 icon
-                flat>
+                flat
+              >
                 <VIcon>arrow_back</VIcon>
               </VBtn>
 
-              <VSpacer/>
+              <VSpacer />
 
               <VProgressCircular
                 v-show="isLoading"
                 color="primary"
-                indeterminate/>
+                indeterminate
+              />
             </VCardTitle>
 
             <VCardText class="text-xs-center">
-              <VProgressCircular
-                :rotate="360"
-                :size="120"
-                :width="10"
-                :value="similarityAToB * 100"
-                :color="similarityAToB > 0.8 ? 'orange' : similarityAToB > 0.4 ? 'blue' : 'teal'">
-                {{ $helpers.floatToPercent(similarityAToB) }}
-              </VProgressCircular>
+              <SimilarityCircular :value="similarityAToB" />
             </VCardText>
 
             <VCardText class="text-xs-center pb-4">
@@ -47,14 +45,7 @@
             </VCardText>
 
             <VCardText class="text-xs-center">
-              <VProgressCircular
-                :rotate="360"
-                :size="120"
-                :width="10"
-                :value="similarityBToA * 100"
-                :color="similarityBToA > 0.8 ? 'orange' : similarityBToA > 0.4 ? 'blue' : 'teal'">
-                {{ $helpers.floatToPercent(similarityBToA) }}
-              </VProgressCircular>
+              <SimilarityCircular :value="similarityBToA" />
             </VCardText>
 
             <VCardText class="text-xs-center pb-4">
@@ -89,25 +80,10 @@
               </div>
             </VCardTitle>
 
-            <VCardText class="mt-3">
-              <VSlider
-                :value="analysis['params']['k']"
-                readonly
-                :max="10"
-                :min="1"
-                :step="1"
-                label="Parameter k"
-                ticks="always"
-                thumb-label="always"
-                hint="Length of subsequence when generating k-grams. [default: 3]"
-                persistent-hint>
-                <template v-slot:append>
-                  <span class="ml-2">
-                    {{ analysis['params']['k'] }}
-                  </span>
-                </template>
-              </VSlider>
-            </VCardText>
+            <KGramParams
+              :value="analysis['params']"
+              readonly
+            />
           </VCard>
         </VFlex>
       </VLayout>
@@ -115,26 +91,32 @@
 
     <VFlex
       xs12
-      md8>
+      md8
+    >
       <VLayout
         row
-        wrap>
+        wrap
+      >
         <VFlex
           xs12
-          md6>
+          md6
+        >
           <ModuleDetailsCard
             :data="moduleA"
-            :fields-hide="['comment', 'exporter', 'import_time']">
+            :fields-hide="['comment', 'exporter', 'import_time']"
+          >
             Module A
           </ModuleDetailsCard>
         </VFlex>
 
         <VFlex
           xs12
-          md6>
+          md6
+        >
           <ModuleDetailsCard
             :data="moduleB"
-            :fields-hide="['comment', 'exporter', 'import_time']">
+            :fields-hide="['comment', 'exporter', 'import_time']"
+          >
             Module B
           </ModuleDetailsCard>
         </VFlex>
@@ -157,7 +139,8 @@
               :headers="tableHeaders"
               :items="tableItems"
               :loading="isLoading"
-              :rows-per-page-items="[10, 20, 50, 100]">
+              :rows-per-page-items="[10, 20, 50, 100]"
+            >
               <template v-slot:items="props">
                 <tr>
                   <td>{{ props.item['k_gram'] }}</td>
@@ -175,12 +158,16 @@
 
 <script lang="ts">
 import ModuleDetailsCard from '@/components/dashboard/ModuleDetailsCard.vue'
+import SimilarityCircular from '../SimilarityCircular.vue'
+import KGramParams from './KGramParams.vue'
 import { Component, Vue, Prop } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 
 @Component({
   components: {
     ModuleDetailsCard,
+    SimilarityCircular,
+    KGramParams,
   },
 })
 export default class KGramResult extends Vue {

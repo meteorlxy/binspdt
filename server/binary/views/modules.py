@@ -42,7 +42,8 @@ class Modules(ViewSet):
 
     if params['search'] != '':
       queryset = queryset.filter(
-        Q(name__contains = params['search'])
+        Q(id__contains = params['search'])
+        | Q(name__contains = params['search'])
         | Q(architecture__contains = params['search'])
         | Q(md5__contains = params['search'])
         | Q(import_time__contains = params['search'])

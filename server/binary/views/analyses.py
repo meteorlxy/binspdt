@@ -1,3 +1,5 @@
+import traceback
+
 from django.core.paginator import Paginator
 from django.db.models import Q
 
@@ -76,8 +78,9 @@ class Analyses(ViewSet):
         'data': data,
       })
     except Exception as e:
+      print(traceback.format_exc())
       return Response({
-        'msg': 'failed to get the details of analysis #' + analysis_id,
+        'msg': 'failed to get the details of analysis #%s' % analysis_id,
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
   def delete(self, request, analysis_id, format='json'):

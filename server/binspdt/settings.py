@@ -148,20 +148,31 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGGING = {
   'version': 1,
   'disable_existing_loggers': False,
-  'handlers': {
-    'file': {
-      'level': 'DEBUG',
-      'class': 'logging.FileHandler',
-      'filename': os.path.join(LOGS_DIR, 'debug.log'),
+  'formatters': {
+    'simple': {
+      'format': '{levelname} {message}',
+      'style': '{',
     },
+    'verbose': {
+      'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+      'style': '{',
+    },
+  },
+  'handlers': {
     'console': {
       'level': 'INFO',
       'class': 'logging.StreamHandler',
     },
+    'tasks_debug': {
+      'level': 'DEBUG',
+      'class': 'logging.FileHandler',
+      'filename': os.path.join(LOGS_DIR, 'tasks_debug.log'),
+      'formatter': 'verbose',
+    },
   },
   'loggers': {
     'binspdt.tasks': {
-      'handlers': ['console', 'file'],
+      'handlers': ['console', 'tasks_debug'],
       'propagate': True,
     },
   },
@@ -198,6 +209,7 @@ CELERY_APP = 'binspdt'
 CELERY_TIME_ZONE = TIME_ZONE
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_TASK_REMOTE_TRACEBACKS = DEBUG
 
 # REST Framework Config
 # https://www.django-rest-framework.org/api-guide/settings/

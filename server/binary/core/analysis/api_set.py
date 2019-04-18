@@ -1,7 +1,7 @@
 import re
 import numpy as np
 from ..asm import Module
-from ..algorithms import KM
+from ..algorithms import KM, jaccard_avg_length
 
 def normalize_api_name(raw_name):
   norm_name = raw_name
@@ -36,7 +36,7 @@ def get_k_depth(f, f_b, k):
     f_b |= func_call.api_calls
     get_k_depth(f, f_b, k-1)
 
-def generate_api_set_birthmark(module, k):
+def generate_birthmark(module, k):
   if not hasattr(module, 'api_set_birthmark'):
     module.api_set_birthmark = dict()
   if k not in module.api_set_birthmark:
@@ -48,19 +48,6 @@ def generate_api_set_birthmark(module, k):
         birthmark[func.address] = func_api_set_birthmark
     module.api_set_birthmark[k] = birthmark
 
-def jaccard_sim(set_1, set_2):
-  union = set_1 | set_2
-  intersection = set_1 & set_2
-  if len(union) == 0 or len(intersection) == 0:
-    return 0
-  return len(intersection) / len(union)
-
-def modified_jaccard_sim(set_1, set_2):
-  intersection = set_1 & set_2
-  if len(intersection) == 0:
-    return 0
-  return 2 * len(intersection) / (len(set_1) + len(set_2))
-
 def get_similarity_matrix(module_1, module_2, k):
   if hasattr(module_1, 'api_set_birthmark') and hasattr(module_2, 'api_set_birthmark'):
     if (k in module_1.api_set_birthmark) and (k in module_2.api_set_birthmark):
@@ -68,42 +55,79 @@ def get_similarity_matrix(module_1, module_2, k):
       for mod1 in module_1.api_set_birthmark[k].values():
         mod1_sim = list()
         for mod2 in module_2.api_set_birthmark[k].values():
-          mod1_sim.append(modified_jaccard_sim(mod1, mod2))
+          mod1_sim.append(jaccard_avg_length(mod1, mod2))
         sim_matrix.append(mod1_sim)
       return sim_matrix
   return False
 
-def analyse_api_set(db, module_1_id, module_2_id, k=2, algorithm='km', precision=1000):
-  print('Generating API birthmark...')
+def run_matching(sim_matrix, algorithm, precision):
+  if algorithm == 'km':
+    sim_martix_np = np.array(sim_matrix)
+
+    # run KM matching algorithm
+    km = KM(sim_martix_np * precision)
+    match = km.run()
+
+    # sum up the similarity
+    sim_sum = 0
+    for x in range(len(match['x'])):
+      if match['x'][x] != -1:
+        sim_sum += sim_matrix[x][match['x'][x]]
+
+    # calculate similarity with all functions
+    similarity = 2 * sim_sum / (len(sim_matrix) + len(sim_matrix[0]))
+
+    return match, similarity
+  else:
+    print('Matching algorithm invalid')
+    return None
+
+def get_matched_functions(module_1_functions, module_2_functions, sim_matrix, match):
+  matched_functions = list()
+  for x in range(len(match['x'])):
+    y = match['x'][x]
+    if y == -1:
+      continue
+    module_1_func_addr = module_1_functions[x]
+    module_2_func_addr = module_2_functions[y]
+    functions_pair = {
+      'module_1_function_address': module_1_func_addr,
+      'module_2_function_address': module_2_func_addr,
+      'similarity': sim_matrix[x][y],
+    }
+    matched_functions.append(functions_pair)
+  return matched_functions
+
+def analyse(db, module_1_id, module_2_id, k=2, algorithm='km', precision=10000):
+  # Generate API Set birthmark
   module_1 = Module(db=db, module_id=module_1_id).load().load_callgraph()
   module_2 = Module(db=db, module_id=module_2_id).load().load_callgraph()
 
   load_calls(module_1)
   load_calls(module_2)
 
-  generate_api_set_birthmark(module_1, k)
-  generate_api_set_birthmark(module_2, k)
+  generate_birthmark(module_1, k)
+  generate_birthmark(module_2, k)
 
   module_1.save(force=True)
   module_2.save(force=True)
 
-  print('Caculating API birthmark similarity matrix...')
+  # Caculating API Set birthmark similarity
   sim_matrix = get_similarity_matrix(module_1, module_2, k)
 
-  print('Running KM algorithm...')
-  km = KM(np.array(sim_matrix) * precision)
-  match = km.run()
+  match, overall_similarity = run_matching(sim_matrix, algorithm, precision)
 
-  print('Generating result...')
-  sim_temp = 0
-  for x in range(len(match['x'])):
-    if match['x'][x] != -1:
-      sim_temp += sim_matrix[x][match['x'][x]]
-  overall_similarity = 2 * sim_temp / (len(sim_matrix) + len(sim_matrix[0]))
+  matched_functions = get_matched_functions(
+    module_1_functions=list(module_1.api_set_birthmark[k].keys()),
+    module_2_functions=list(module_2.api_set_birthmark[k].keys()),
+    sim_matrix=sim_matrix,
+    match=match,
+  )
 
+  # Generating result
   result = {
     'sim_matrix': sim_matrix,
-    'match': match,
+    'matched_functions': matched_functions,
     'overall_similarity': overall_similarity,
   }
   return result

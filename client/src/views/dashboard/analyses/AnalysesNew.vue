@@ -7,59 +7,70 @@
       exact
       icon
       flat
-      :disabled="isLoading">
+      :disabled="isLoading"
+    >
       <VIcon>arrow_back</VIcon>
     </VBtn>
 
     <VStepper
       v-model="currentStep"
       class="elevation-0"
-      vertical>
+      vertical
+    >
       <!-- Step 1 -->
       <VStepperStep
         step="1"
-        :complete="isValid.steps.first">
+        :complete="isValid.steps.first"
+      >
         <span>Select Two Modules to Analyse</span>
 
         <span
           v-if="currentStep > 1 && isValid.steps.first"
-          class="green--text">
-          {{ `[#${steps.first.moduleA.id}] ${steps.first.moduleA.name}  vs.  [#${steps.first.moduleB.id}] ${steps.first.moduleB.name}` }}
+          class="green--text"
+        >
+          {{ modulesString }}
         </span>
       </VStepperStep>
 
       <VStepperContent step="1">
         <VLayout
           row
-          wrap>
+          wrap
+        >
           <VFlex
             xs12
-            md6>
+            md6
+          >
             <ModuleSelect
               v-model="steps.first.moduleA"
               :confirmed.sync="steps.first.confirmedA"
               class="mx-3"
-              label="Modules A to analyse"/>
+              label="Modules A to analyse"
+            />
           </VFlex>
 
           <VFlex
             xs12
-            md6>
+            md6
+          >
             <ModuleSelect
               v-model="steps.first.moduleB"
               :confirmed.sync="steps.first.confirmedB"
               class="mx-3"
-              label="Modules B to analyse"/>
+              label="Modules B to analyse"
+            />
           </VFlex>
 
           <VFlex
             class="mt-4 ml-2"
-            xs12>
+            xs12
+          >
             <VBtn
               color="primary"
               title="Click to next step"
               :disabled="!isValid.steps.first"
-              @click="currentStep = 2">
+              @click="setStep(2)"
+            >
               Continue
             </VBtn>
           </VFlex>
@@ -69,12 +80,14 @@
       <!-- Step 2 -->
       <VStepperStep
         step="2"
-        :complete="isValid.steps.second">
+        :complete="isValid.steps.second"
+      >
         <span>Select the Method for Analysis</span>
 
         <span
           v-if="currentStep > 2 && isValid.steps.second"
-          class="green--text">
+          class="green--text"
+        >
           {{ `Use method: ${steps.second.method.text}` }}
         </span>
       </VStepperStep>
@@ -82,7 +95,8 @@
       <VStepperContent step="2">
         <VLayout
           row
-          wrap>
+          wrap
+        >
           <VFlex xs12>
             <VSelect
               v-model="steps.second.method"
@@ -92,23 +106,27 @@
               prepend-icon="assessment"
               :items="methods"
               :item-text="item => item.text"
-              :item-value="item => item"/>
+              :item-value="item => item"
+            />
           </VFlex>
 
           <VFlex
             class="mt-4"
-            xs12>
+            xs12
+          >
             <VBtn
               color="primary"
               title="Click to next step"
               :disabled="!isValid.steps.second"
-              @click="currentStep = 3">
+              @click="setStep(3)"
+            >
               Continue
             </VBtn>
 
             <VBtn
               title="Click to previous step"
-              @click="currentStep = 1">
+              @click="setStep(1)"
+            >
               Back
             </VBtn>
           </VFlex>
@@ -118,12 +136,14 @@
       <!-- Step 3 -->
       <VStepperStep
         step="3"
-        :complete="isValid.steps.third">
+        :complete="isValid.steps.third"
+      >
         <span>Set the Parameters of Analysis Method</span>
 
         <span
           v-if="currentStep > 3 && isValid.steps.third"
-          class="green--text">
+          class="green--text"
+        >
           {{ `Params of method: ${steps.second.method.text}` }}
         </span>
       </VStepperStep>
@@ -131,29 +151,31 @@
       <VStepperContent step="3">
         <VLayout
           row
-          wrap>
+          wrap
+        >
           <VFlex xs12>
             <Component
               :is="steps.second.method.paramsComponent"
               v-if="currentStep > 2"
               v-model="steps.third.params"
-              :is-valid.sync="steps.third.isValid"/>
+              :is-valid.sync="steps.third.isValid"
+            />
           </VFlex>
 
-          <VFlex
-            class="mt-4"
-            xs12>
+          <VFlex xs12>
             <VBtn
               color="primary"
               title="Click to next step"
               :disabled="!isValid.steps.third"
-              @click="currentStep = 4">
+              @click="setStep(4)"
+            >
               Continue
             </VBtn>
 
             <VBtn
               title="Click to previous step"
-              @click="currentStep = 2">
+              @click="setStep(2)"
+            >
               Back
             </VBtn>
           </VFlex>
@@ -163,14 +185,16 @@
       <!-- Step 4 -->
       <VStepperStep
         step="4"
-        :complete="isValid.steps.forth">
+        :complete="isValid.steps.forth"
+      >
         <span>Start a New Analysis</span>
       </VStepperStep>
 
       <VStepperContent step="4">
         <VLayout
           row
-          wrap>
+          wrap
+        >
           <VFlex xs12>
             <VTextField
               v-model="steps.forth.description"
@@ -178,17 +202,20 @@
               prepend-icon="add_comment"
               label="Description of this analysis"
               hint="Remark on this analysis"
-              persistent-hint/>
+              persistent-hint
+            />
           </VFlex>
 
           <VFlex
             class="mt-4"
-            xs12>
+            xs12
+          >
             <VBtn
               color="success"
               title="Click to submit a new analysis"
               :disabled="!isValid.all"
-              @click="handlePostAnalysis">
+              @click="handlePostAnalysis"
+            >
               <VIcon left>
                 check
               </VIcon>
@@ -197,7 +224,8 @@
 
             <VBtn
               title="Click to previous step"
-              @click="currentStep = 3">
+              @click="setStep(3)"
+            >
               Back
             </VBtn>
           </VFlex>
@@ -213,6 +241,29 @@ import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { requestCatch } from '@/utils/catchError'
 
+type Steps = {
+  first: {
+    moduleA: any,
+    moduleB: any,
+    confirmedA: boolean,
+    confirmedB: boolean,
+  },
+  second: {
+    method: {
+      name: string | null,
+      text: string,
+      paramsComponent: any,
+    },
+  },
+  third: {
+    isValid: boolean,
+    params: any,
+  },
+  forth: {
+    description: string,
+  },
+}
+
 @Component({
   components: {
     ModuleSelect,
@@ -224,7 +275,7 @@ export default class AnalysesNew extends Vue {
 
   currentStep: Number = 1
 
-  steps = {
+  steps: Steps = {
     first: {
       moduleA: null,
       moduleB: null,
@@ -273,8 +324,8 @@ export default class AnalysesNew extends Vue {
     if (this.isValid.all) {
       return {
         modules: [
-          (<any> this.steps.first.moduleA).id,
-          (<any> this.steps.first.moduleB).id,
+          this.steps.first.moduleA.id,
+          this.steps.first.moduleB.id,
         ],
         method: this.steps.second.method.name,
         params: this.steps.third.params,
@@ -283,6 +334,22 @@ export default class AnalysesNew extends Vue {
     } else {
       return false
     }
+  }
+
+  get modulesString (): string {
+    const moduleA = this.steps.first.moduleA
+    const moduleB = this.steps.first.moduleB
+    return `[#${moduleA.id}] ${moduleA.name} vs. [#${moduleB.id}] ${moduleB.name}`
+  }
+
+  setStep (step: number): void {
+    if (this.currentStep < 3 && step === 3) {
+      this.steps.third.params = {}
+    }
+    if (step === 4) {
+      this.steps.forth.description = `${this.modulesString} with ${this.steps.second.method.name}`
+    }
+    this.currentStep = step
   }
 
   async handlePostAnalysis () {

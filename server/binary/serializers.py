@@ -84,8 +84,10 @@ class ModuleAnalysisSerializer(serializers.ModelSerializer):
     Check if the analysis fields valid
     """
     available_methods = (
+      'api_frequency',
       'api_set',
       'k_gram',
+      'key_read_write',
     )
 
     if data['method'] not in available_methods:

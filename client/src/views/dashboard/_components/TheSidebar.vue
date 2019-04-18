@@ -5,7 +5,8 @@
     clipped
     :mobile-break-point="1264"
     :value="value"
-    @input="handleInput">
+    @input="handleInput"
+  >
     <VList class="pt-0">
       <VListTile class="py-2">
         <VListTileAvatar color="indigo">
@@ -21,11 +22,12 @@
         </VListTileContent>
       </VListTile>
 
-      <VDivider class="mb-2"/>
+      <VDivider class="mb-2" />
 
       <VListTile
         :to="{ name: 'dashboard' }"
-        :exact="true">
+        :exact="true"
+      >
         <VListTileAction>
           <VIcon>dashboard</VIcon>
         </VListTileAction>
@@ -37,7 +39,8 @@
 
       <VListTile
         :to="{ name: 'dashboard.modules' }"
-        :exact="false">
+        :exact="false"
+      >
         <VListTileAction>
           <VIcon>developer_board</VIcon>
         </VListTileAction>
@@ -49,7 +52,8 @@
 
       <VListTile
         :to="{ name: 'dashboard.analyses' }"
-        :exact="false">
+        :exact="false"
+      >
         <VListTileAction>
           <VIcon>timeline</VIcon>
         </VListTileAction>
@@ -73,16 +77,18 @@
         </template>
 
         <VListTile
-          :to="{ name: 'dashboard.wiki' }"
-          :exact="true">
+          :to="{ name: 'dashboard.wiki.key-read-write' }"
+          :exact="true"
+        >
           <VListTileContent>
-            <VListTileTitle>Wiki Index</VListTileTitle>
+            <VListTileTitle>Key Read-Write</VListTileTitle>
           </VListTileContent>
         </VListTile>
 
         <VListTile
           :to="{ name: 'dashboard.wiki.api-set' }"
-          :exact="true">
+          :exact="true"
+        >
           <VListTileContent>
             <VListTileTitle>API Set</VListTileTitle>
           </VListTileContent>
@@ -90,9 +96,19 @@
 
         <VListTile
           :to="{ name: 'dashboard.wiki.k-gram' }"
-          :exact="true">
+          :exact="true"
+        >
           <VListTileContent>
             <VListTileTitle>K-Gram</VListTileTitle>
+          </VListTileContent>
+        </VListTile>
+
+        <VListTile
+          :to="{ name: 'dashboard.wiki.api-frequency' }"
+          :exact="true"
+        >
+          <VListTileContent>
+            <VListTileTitle>API Frequency</VListTileTitle>
           </VListTileContent>
         </VListTile>
       </VListGroup>

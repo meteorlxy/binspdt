@@ -144,13 +144,14 @@ export default [
           linkText: 'Wiki',
         },
         children: [
-          // Dashboard Wiki Index
+          // Dashboard Wiki Key Read-Write
           {
-            path: '',
-            name: 'dashboard.wiki',
-            component: () => import('@/views/dashboard/wiki/WikiIndex.vue'),
+            path: 'key-read-write',
+            name: 'dashboard.wiki.key-read-write',
+            component: () => import('@/views/dashboard/wiki/WikiKeyReadWrite.vue'),
             meta: {
-              title: 'Wiki',
+              title: 'Key Read-Write',
+              linkText: 'Key Read-Write',
             },
           },
 
@@ -173,6 +174,17 @@ export default [
             meta: {
               title: 'K-Gram',
               linkText: 'K-Gram',
+            },
+          },
+
+          // Dashboard Wiki API Frequency
+          {
+            path: 'api-frequency',
+            name: 'dashboard.wiki.api-frequency',
+            component: () => import('@/views/dashboard/wiki/WikiAPIFrequency.vue'),
+            meta: {
+              title: 'API Frequency',
+              linkText: 'API Frequency',
             },
           },
         ],

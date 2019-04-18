@@ -5,38 +5,6 @@ django.setup()
 from binary.core.asm import Module
 from binary.utils import db
 
-
-module = Module(db, 1).load().load_expression_trees()
-
-exp_tree = module.expression_trees[593]
-
-print(exp_tree)
-
-
-###### Instruction sequence
-
-# module = Module(db, 1).load().load_operands()
-
-# function = module.functions[list(module.functions.keys())[0]]
-
-# basic_block_1 = function.basic_blocks[list(function.basic_blocks.keys())[0]]
-# basic_block_2 = function.basic_blocks[list(function.basic_blocks.keys())[2]]
-
-# mnemonic_seq_1 = []
-# mnemonic_seq_2 = []
-
-# for inst in basic_block_1.instructions.values():
-#   mnemonic_seq_1.append(inst.mnemonic)
-# for inst in basic_block_2.instructions.values():
-#   mnemonic_seq_2.append(inst.mnemonic)
-
-# print(mnemonic_seq_1)
-# print(mnemonic_seq_2)
-
-
-
-
-
 '''
 Init a module
 '''
