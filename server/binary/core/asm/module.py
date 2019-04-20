@@ -47,7 +47,9 @@ class Module(object):
     if not self.has_loaded_module_details:
       module_details = self._db.get_module_details(module_id=self.id)
       
-      self.functions_count = module_details['functions_count']
+      self.module_functions_count = module_details['module_functions_count']
+      self.external_functions_count = module_details['external_functions_count']
+      self.functions_count = self.module_functions_count + self.external_functions_count
       self.basic_blocks_count = module_details['basic_blocks_count']
       self.instructions_count = module_details['instructions_count']
 

@@ -12,6 +12,7 @@ numpy = "*"
 eventlet = "*"
 djangorestframework = "*"
 python-dotenv = "*"
+sqlparse = "*"
 
 [dev-packages]
 
