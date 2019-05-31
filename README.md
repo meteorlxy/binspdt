@@ -8,7 +8,7 @@
 
 ```sh
 pipenv install
-npm run install
+npm install
 ```
 
 ### Config Environment Variables
