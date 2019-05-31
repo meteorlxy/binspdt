@@ -151,7 +151,7 @@
               :headers="tableVectorHeaders"
               :items="tableVectorItems"
               :loading="isLoading"
-              :rows-per-page-items="[10, 20, 50, 100]"
+              :rows-per-page-items="[5, 10, 20, 50, 100]"
             >
               <template v-slot:items="props">
                 <tr>
@@ -214,7 +214,7 @@
               :headers="tableSequenceHeaders"
               :items="tableSequenceItems"
               :loading="isLoading"
-              :rows-per-page-items="[10, 20, 50, 100]"
+              :rows-per-page-items="[5, 10, 20, 50, 100]"
             >
               <template v-slot:items="props">
                 <tr>

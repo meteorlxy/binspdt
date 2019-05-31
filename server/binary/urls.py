@@ -2,8 +2,6 @@ from django.urls import path
 
 from .views.modules import Modules
 from .views.analyses import Analyses
-# from .views import analysis_api
-# from .views import results
 
 urlpatterns = [
   # Modules index and delete
