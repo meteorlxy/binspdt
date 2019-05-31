@@ -19,8 +19,7 @@ export default class App extends Vue {
 }
 </script>
 
-<style lang="scss">
-.v-slider__thumb-label {
-  background-color: rgb(25, 118, 210) !important;
-}
+<style lang="stylus">
+.v-slider__thumb-label
+  background-color: rgb(25, 118, 210) !important
 </style>
